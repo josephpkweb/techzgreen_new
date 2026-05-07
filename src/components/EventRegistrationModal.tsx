@@ -71,7 +71,7 @@ export default function EventRegistrationModal({ event, onClose, onSuccess }: Pr
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-lg glass-panel p-0 overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+      <div className="relative z-10 w-full max-w-[calc(100%-2rem)] sm:max-w-lg glass-panel p-0 overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header with poster */}
         {event.poster_url && (
           <div className="relative h-32 overflow-hidden flex-shrink-0">

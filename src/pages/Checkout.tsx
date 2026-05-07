@@ -278,9 +278,9 @@ export default function Checkout() {
 
       {/* Progress */}
       <div className="flex items-center gap-3 mb-10">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm transition-all ${step >= 1 ? 'bg-[#2e7d32] text-white shadow' : 'bg-[rgba(46,125,50,0.1)] text-[#5f7a60]'}`}>1</div>
+        <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full font-bold text-sm transition-all ${step >= 1 ? 'bg-[#2e7d32] text-white shadow' : 'bg-[rgba(46,125,50,0.1)] text-[#5f7a60]'}`}>1</div>
         <div className={`h-1 flex-grow rounded-full transition-all ${step >= 2 ? 'bg-[#2e7d32]' : 'bg-[rgba(46,125,50,0.15)]'}`} />
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm transition-all ${step >= 2 ? 'bg-[#2e7d32] text-white shadow' : 'bg-[rgba(46,125,50,0.1)] text-[#5f7a60]'}`}>2</div>
+        <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full font-bold text-sm transition-all ${step >= 2 ? 'bg-[#2e7d32] text-white shadow' : 'bg-[rgba(46,125,50,0.1)] text-[#5f7a60]'}`}>2</div>
       </div>
 
       {/* ── Step 1: Address ── */}

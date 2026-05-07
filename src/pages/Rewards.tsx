@@ -48,6 +48,11 @@ export default function Rewards() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
+    if (f && !f.type.startsWith('image/')) {
+      alert('Please select an image file (JPG, PNG, WEBP).');
+      e.target.value = '';
+      return;
+    }
     setFile(f);
     if (f) setPreview(URL.createObjectURL(f));
     else setPreview(null);
@@ -58,7 +63,8 @@ export default function Rewards() {
     if (!file || !user) return;
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const nameParts = file.name.split('.');
+      const fileExt = nameParts.length > 1 ? nameParts.pop() : file.type.split('/')[1] || 'jpg';
       const filePath = `${user.id}_${Math.random()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage.from('waste-images').upload(filePath, file, { cacheControl: '31536000' });
       if (uploadError) throw uploadError;
@@ -198,7 +204,7 @@ export default function Rewards() {
               {/* History */}
               <div className="glass-panel p-5 sm:p-6">
                 <h2 className="text-lg font-bold text-[#1a3d1f] mb-4">Your History</h2>
-                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[360px] sm:max-h-[480px] overflow-y-auto pr-1">
                   {submissions.length === 0 && (
                     <div className="glass-panel p-8 text-center">
                       <Leaf className="w-10 h-10 text-[rgba(46,125,50,0.25)] mx-auto mb-2" />

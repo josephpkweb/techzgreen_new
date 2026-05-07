@@ -111,7 +111,10 @@ export default function UserDashboard() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(5)
-      .then(({ data }) => { if (data) setRecentOrders(data); });
+      .then(({ data, error }) => {
+        if (error) console.error('Failed to load orders:', error);
+        if (data) setRecentOrders(data);
+      });
   }, [user, profileRole, loading, navigate]);
 
   if (loading || !user) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
@@ -14,20 +14,27 @@ export default function Shop() {
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const { addToCart } = useCart();
   const { totalPoints, user } = useAuth();
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     supabase.from('products').select('*').then(({ data, error }) => {
-      if (!error && data) setProducts(data as Product[]);
-      setLoading(false);
+      if (!error && data && mountedRef.current) setProducts(data as Product[]);
+      if (mountedRef.current) setLoading(false);
     });
+    return () => { mountedRef.current = false; };
   }, []);
 
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(
+    () => products.filter(p => p.name.toLowerCase().includes(search.toLowerCase())),
+    [products, search]
+  );
 
   const handleAdd = (product: Product) => {
     addToCart(product);
     setAddedIds(prev => new Set([...prev, product.id]));
     setTimeout(() => {
+      if (!mountedRef.current) return;
       setAddedIds(prev => { const n = new Set(prev); n.delete(product.id); return n; });
     }, 1500);
   };

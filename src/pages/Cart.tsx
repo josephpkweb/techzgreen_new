@@ -127,7 +127,7 @@ export default function Cart() {
         </div>
 
         {/* Right: Order Summary — desktop sidebar, mobile hidden (uses sticky bar) */}
-        <div className="hidden sm:block w-80 flex-shrink-0 mt-0">
+        <div className="hidden lg:block w-80 flex-shrink-0 mt-0">
           <div className="glass-panel p-6 space-y-4 sticky top-24">
             <h2 className="font-black text-lg text-[#1a3d1f]" style={{ fontFamily: 'Outfit,sans-serif' }}>Order Summary</h2>
             <div className="space-y-2 text-sm">
