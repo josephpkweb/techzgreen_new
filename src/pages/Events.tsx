@@ -34,7 +34,7 @@ export default function Events() {
 
   useEffect(() => {
     if (user && events.length > 0) fetchUserRegistrations();
-  }, [user, events]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchEvents = async () => {
     const { data } = await supabase

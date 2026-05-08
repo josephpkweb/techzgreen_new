@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { GCoinIcon } from '../components/GCoin';
 import { ShoppingBag, Search, Check, Leaf } from 'lucide-react';
 
 export default function Shop() {
@@ -11,20 +13,28 @@ export default function Shop() {
   const [search, setSearch] = useState('');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const { addToCart } = useCart();
+  const { totalPoints, user } = useAuth();
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     supabase.from('products').select('*').then(({ data, error }) => {
-      if (!error && data) setProducts(data as Product[]);
-      setLoading(false);
+      if (!error && data && mountedRef.current) setProducts(data as Product[]);
+      if (mountedRef.current) setLoading(false);
     });
+    return () => { mountedRef.current = false; };
   }, []);
 
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(
+    () => products.filter(p => p.name.toLowerCase().includes(search.toLowerCase())),
+    [products, search]
+  );
 
   const handleAdd = (product: Product) => {
     addToCart(product);
     setAddedIds(prev => new Set([...prev, product.id]));
     setTimeout(() => {
+      if (!mountedRef.current) return;
       setAddedIds(prev => { const n = new Set(prev); n.delete(product.id); return n; });
     }, 1500);
   };
@@ -63,9 +73,20 @@ export default function Shop() {
                 Browse eco-friendly products made from recycled materials. Every purchase supports a greener future.
               </p>
             </div>
-            <div className="shrink-0 text-right">
-              <p className="text-3xl font-black text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>{filtered.length}</p>
-              <p className="text-sm text-[#5f7a60] font-semibold">Products</p>
+            <div className="shrink-0 flex items-center gap-4">
+              {user && (
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
+                  <GCoinIcon size={28} />
+                  <div className="text-left">
+                    <p className="text-[10px] text-[#5f7a60] font-bold uppercase tracking-wide">Your Balance</p>
+                    <p className="text-xl font-black text-[#1a3d1f] leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>{totalPoints} G</p>
+                  </div>
+                </div>
+              )}
+              <div className="text-right">
+                <p className="text-3xl font-black text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>{filtered.length}</p>
+                <p className="text-sm text-[#5f7a60] font-semibold">Products</p>
+              </div>
             </div>
           </div>
         </div>
@@ -78,7 +99,13 @@ export default function Shop() {
           <div className="flex items-center gap-3 mb-2 sm:hidden">
             <ShoppingBag className="w-5 h-5 text-[#2e7d32]" />
             <h1 className="font-black text-[#1a3d1f] text-xl" style={{ fontFamily: 'Outfit,sans-serif' }}>Eco Shop</h1>
-            <span className="ml-auto text-xs text-[#5f7a60] font-semibold">{filtered.length} items</span>
+            {user && (
+              <span className="ml-auto flex items-center gap-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                <GCoinIcon size={16} />
+                <span className="text-xs font-black text-[#1a3d1f]">{totalPoints}</span>
+              </span>
+            )}
+            <span className={`text-xs text-[#5f7a60] font-semibold ${user ? '' : 'ml-auto'}`}>{filtered.length} items</span>
           </div>
           {/* Search row */}
           <div className="flex items-center gap-3">

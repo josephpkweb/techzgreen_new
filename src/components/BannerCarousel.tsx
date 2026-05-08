@@ -32,10 +32,10 @@ export default function BannerCarousel() {
 
   if (banners.length === 0) return null;
 
-  const banner = banners[current];
+  const banner = banners[current] ?? banners[0];
 
   return (
-    <div className="relative overflow-hidden mx-4 mb-2 rounded-2xl shadow-lg" style={{maxWidth:'calc(100% - 2rem)', margin:'0 1rem 1.5rem'}}>
+    <div className="relative overflow-hidden mx-4 mb-6 rounded-2xl shadow-lg">
       {/* Slide */}
       <div className="relative h-48 md:h-64">
         <img
@@ -47,7 +47,7 @@ export default function BannerCarousel() {
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
         {/* Content */}
-        <div className="absolute inset-0 flex flex-col justify-center px-8">
+        <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-8">
           <span className="section-label mb-2 inline-flex w-fit !bg-white/20 !border-white/30 !text-white text-xs">Announcement</span>
           <h3 className="text-2xl md:text-3xl font-black text-white mb-1 drop-shadow">{banner.title}</h3>
           {banner.subtitle && <p className="text-white/80 text-sm md:text-base">{banner.subtitle}</p>}
