@@ -35,7 +35,7 @@ export default function BannerCarousel() {
   const banner = banners[current] ?? banners[0];
 
   return (
-    <div className="relative overflow-hidden mx-4 mb-6 rounded-2xl shadow-lg">
+    <div className="relative overflow-hidden mb-6 rounded-2xl shadow-lg">
       {/* Slide */}
       <div className="relative h-48 md:h-64">
         <img

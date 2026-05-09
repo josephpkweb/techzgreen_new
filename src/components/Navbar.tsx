@@ -59,7 +59,7 @@ export default function Navbar() {
     <>
       {/* ── Top Navbar ── */}
       <div className="sticky top-3 z-50 px-4">
-        <nav className="glass-nav max-w-7xl mx-auto rounded-2xl px-4 sm:px-6">
+        <nav className="glass-nav max-w-7xl mx-auto rounded-2xl px-4 md:px-6">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
             <Link to="/" className="flex items-center cursor-pointer">
@@ -67,7 +67,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav Links */}
-            <div className="hidden sm:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1">
               <Link to="/" className={linkClass('/')}>Home</Link>
               <Link to="/about" className={linkClass('/about')}>About</Link>
               <Link to="/featured-products" className={linkClass('/featured-products')}>
@@ -105,7 +105,7 @@ export default function Navbar() {
               </Link>
 
               {/* Mobile cart icon (top bar) */}
-              <Link to="/cart" className="relative p-2 rounded-lg text-[#2d4a30] transition-colors cursor-pointer sm:hidden">
+              <Link to="/cart" className="relative p-2 rounded-lg text-[#2d4a30] transition-colors cursor-pointer md:hidden">
                 <ShoppingCart className="w-5 h-5" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-[#ffb300] text-black text-xs font-black w-4 h-4 rounded-full flex items-center justify-center leading-none">
@@ -116,12 +116,12 @@ export default function Navbar() {
 
               {!user ? (
                 <>
-                  <Link to="/login" className="btn-accent hidden sm:flex items-center gap-1.5 text-sm !py-2 !px-4">
+                  <Link to="/login" className="btn-accent hidden md:flex items-center gap-1.5 text-sm !py-2 !px-4">
                     <LogIn className="w-4 h-4" /> Login / Join
                   </Link>
                   <button
                     onClick={() => setMobileMenuOpen(o => !o)}
-                    className="sm:hidden p-2 rounded-lg text-[#2d4a30] hover:bg-[rgba(46,125,50,0.1)] transition-colors cursor-pointer"
+                    className="md:hidden p-2 rounded-lg text-[#2d4a30] hover:bg-[rgba(46,125,50,0.1)] transition-colors cursor-pointer"
                   >
                     {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                   </button>
@@ -131,7 +131,7 @@ export default function Navbar() {
                   {/* Desktop logout */}
                   <button
                     onClick={handleLogout}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-[#c62828] hover:bg-red-50 transition-colors cursor-pointer"
+                    className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-[#c62828] hover:bg-red-50 transition-colors cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" /> Logout
                   </button>
@@ -142,7 +142,7 @@ export default function Navbar() {
 
           {/* Mobile dropdown — guests only */}
           {mobileMenuOpen && !user && (
-            <div className="sm:hidden pb-3 pt-2 border-t border-[rgba(46,125,50,0.1)] mt-1 flex flex-col gap-0.5">
+            <div className="md:hidden pb-3 pt-2 border-t border-[rgba(46,125,50,0.1)] mt-1 flex flex-col gap-0.5">
               {[
                 { to: '/', icon: <Home className="w-4 h-4 flex-shrink-0" />, label: 'Home' },
                 { to: '/about', icon: <Info className="w-4 h-4 flex-shrink-0" />, label: 'About' },
@@ -168,7 +168,7 @@ export default function Navbar() {
 
       {/* ── Mobile Bottom Nav (logged-in users) ── */}
       {user && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
           <div className="glass-nav mx-3 mb-3 rounded-2xl px-1 py-2">
             <div className="flex justify-around items-center">
               {bottomTabs.map(({ to, icon, label }) => (
