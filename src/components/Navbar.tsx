@@ -22,6 +22,9 @@ export default function Navbar() {
   const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
   const isActive = (path: string) => location.pathname === path;
 
+  // Partner portal has its own header; hide main navbar
+  if (profileRole === 'partner') return null;
+
   const linkClass = (path: string) =>
     `relative px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-200 cursor-pointer
     ${isActive(path)
@@ -46,10 +49,35 @@ export default function Navbar() {
     { to: '/profile', icon: <User className="w-5 h-5" />, label: 'Profile' },
   ];
 
+  // Admin only needs admin dashboard — hide everything else
+  if (profileRole === 'admin') {
+    return (
+      <>
+        <div className="sticky top-3 z-50 px-4">
+          <nav className="glass-nav max-w-7xl mx-auto rounded-2xl px-4 md:px-6">
+            <div className="flex justify-between items-center h-14">
+              <Link to="/admin" className="flex items-center cursor-pointer">
+                <img src={fullLogo} alt="TechzGreen" className="h-10 w-auto object-contain" />
+              </Link>
+              <div className="flex items-center gap-3">
+                <Link to="/admin" className={linkClass('/admin')}>
+                  <span className="flex items-center gap-1.5"><LayoutDashboard className="w-3.5 h-3.5" />Admin Dashboard</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-[#c62828] hover:bg-red-50 transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </>
+    );
+  }
+
   const adminTabs = [
-    { to: '/', icon: <Home className="w-5 h-5" />, label: 'Home' },
-    { to: '/shop', icon: <Store className="w-5 h-5" />, label: 'Shop' },
-    { to: '/events', icon: <Calendar className="w-5 h-5" />, label: 'Events' },
     { to: '/admin', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Admin' },
   ];
 

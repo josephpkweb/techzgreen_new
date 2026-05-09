@@ -8,7 +8,7 @@ import {
   XCircle, Award, Leaf, CheckCircle2, Package, Plus, Trash2, UploadCloud,
   Tag, Image, Calendar, MapPin, Users, Settings, ChevronRight, X, Phone, Mail,
   Megaphone, ToggleLeft, ToggleRight, ShoppingBag, Truck, Clock, CheckCheck,
-  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check
+  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake, BarChart3, ClipboardList
 } from 'lucide-react';
 
 // ── Order Card sub-component (needs own state hooks) ──
@@ -174,7 +174,7 @@ function OrderCard({
 }
 
 
-type Tab = 'submissions' | 'products' | 'banners' | 'events' | 'orders' | 'vouchers' | 'partner_merch' | 'settings';
+type Tab = 'submissions' | 'products' | 'banners' | 'events' | 'orders' | 'vouchers' | 'partner_merch' | 'partners';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -229,7 +229,21 @@ export default function AdminDashboard() {
   // ── Vouchers ──
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [addingVoucher, setAddingVoucher] = useState(false);
-  const [voucherForm, setVoucherForm] = useState({ title: '', description: '', brand_name: '', points_cost: '', promo_code: '' });
+  const [voucherForm, setVoucherForm] = useState({
+    title: '', description: '', brand_name: '', points_cost: '',
+    discount_type: 'percent', discount_value: '', partner_id: '', user_limit: '1',
+    start_date: '', end_date: ''
+  });
+  const [voucherImageFile, setVoucherImageFile] = useState<File | null>(null);
+  const [voucherImagePreview, setVoucherImagePreview] = useState<string | null>(null);
+  const voucherFileRef = useRef<HTMLInputElement>(null);
+
+  // ── Partners ──
+  const [partners, setPartners] = useState<any[]>([]);
+  const [addingPartner, setAddingPartner] = useState(false);
+  const [partnerForm, setPartnerForm] = useState({ company_name: '', contact_email: '' });
+  const [partnerAnalytics, setPartnerAnalytics] = useState<Record<string, { redemptions: number; settlement: number }>>({});
+  const [analyticsModalPartner, setAnalyticsModalPartner] = useState<any | null>(null);
 
   // ── Partner Merch ──
   const [partnerProducts, setPartnerProducts] = useState<any[]>([]);
@@ -260,8 +274,9 @@ export default function AdminDashboard() {
       case 'banners': fetchBanners(); break;
       case 'events': fetchEvents(); break;
       case 'orders': fetchOrders(); break;
-      case 'vouchers': fetchVouchers(); break;
+      case 'vouchers': fetchVouchers(); fetchPartners(); break;
       case 'partner_merch': fetchPartnerProducts(); fetchEvents(); break;
+      case 'partners': fetchPartners(); fetchPartnerAnalytics(); break;
     }
   }, [activeTab, profileRole]);
 
@@ -442,22 +457,38 @@ export default function AdminDashboard() {
 
   // ─── Vouchers ───
   const fetchVouchers = async () => {
-    const { data } = await supabase.from('vouchers').select('*').order('created_at', { ascending: false });
+    const { data } = await supabase.from('vouchers').select('*, partner_profiles(company_name)').order('created_at', { ascending: false });
     if (data) setVouchers(data);
   };
   const handleAddVoucher = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!voucherForm.discount_value || parseFloat(voucherForm.discount_value) <= 0) { alert('Enter a valid discount value.'); return; }
     setAddingVoucher(true);
     try {
-      await supabase.from('vouchers').insert({
+      let imageUrl: string | null = null;
+      if (voucherImageFile) imageUrl = await uploadImage(voucherImageFile, 'vouchers');
+      
+      const generatedPromo = `${voucherForm.brand_name.substring(0, 3).toUpperCase()}${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      const { error } = await supabase.from('vouchers').insert({
         title: voucherForm.title,
         description: voucherForm.description,
         brand_name: voucherForm.brand_name,
+        promo_code: generatedPromo,
         points_cost: parseInt(voucherForm.points_cost, 10),
-        promo_code: voucherForm.promo_code || null,
+        discount_type: voucherForm.discount_type,
+        discount_value: parseFloat(voucherForm.discount_value),
+        user_limit: parseInt(voucherForm.user_limit, 10),
+        start_date: voucherForm.start_date ? new Date(voucherForm.start_date).toISOString() : null,
+        end_date: voucherForm.end_date ? new Date(voucherForm.end_date).toISOString() : null,
+        image_url: imageUrl,
+        partner_id: voucherForm.partner_id || null,
         is_active: true
       });
-      setVoucherForm({ title: '', description: '', brand_name: '', points_cost: '', promo_code: '' });
+      if (error) throw error;
+      setVoucherForm({ title: '', description: '', brand_name: '', points_cost: '', discount_type: 'percent', discount_value: '', partner_id: '', user_limit: '1', start_date: '', end_date: '' });
+      setVoucherImageFile(null); setVoucherImagePreview(null);
+      if (voucherFileRef.current) voucherFileRef.current.value = '';
       fetchVouchers();
     } catch (e: any) { alert(e.message); } finally { setAddingVoucher(false); }
   };
@@ -466,9 +497,81 @@ export default function AdminDashboard() {
     fetchVouchers();
   };
   const deleteVoucher = async (id: string) => {
-    if (!confirm('Delete this voucher?')) return;
+    if (!confirm('Delete this voucher? All user_vouchers with this voucher will lose the reference.')) return;
     await supabase.from('vouchers').delete().eq('id', id);
     fetchVouchers();
+  };
+
+  // ─── Partners ───
+  const fetchPartners = async () => {
+    const { data } = await supabase.from('partner_profiles').select('*').order('created_at', { ascending: false });
+    if (data) setPartners(data);
+  };
+  const fetchPartnerAnalytics = async () => {
+    const { data } = await supabase
+      .from('user_vouchers')
+      .select('used_by_partner_id, settlement_amount')
+      .not('used_at', 'is', null)
+      .not('used_by_partner_id', 'is', null);
+    if (!data) return;
+    const map: Record<string, { redemptions: number; settlement: number }> = {};
+    for (const row of data) {
+      const pid = row.used_by_partner_id;
+      if (!map[pid]) map[pid] = { redemptions: 0, settlement: 0 };
+      map[pid].redemptions += 1;
+      map[pid].settlement += Number(row.settlement_amount) || 0;
+    }
+    setPartnerAnalytics(map);
+  };
+  const handleAddPartner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setAddingPartner(true);
+    try {
+      // Find auth user by email via profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', partnerForm.contact_email)
+        .single();
+      if (!profile) throw new Error('No account found for that email. Ask the partner to sign up first, then set their role to "partner" in Supabase Auth dashboard.');
+
+      // Update role to partner
+      await supabase.from('profiles').update({ role: 'partner' }).eq('id', profile.id);
+
+      // Create partner_profiles entry
+      const { error } = await supabase.from('partner_profiles').insert({
+        user_id: profile.id,
+        company_name: partnerForm.company_name,
+        contact_email: partnerForm.contact_email,
+        status: 'approved',
+        created_by: user.id
+      });
+      if (error) throw error;
+      setPartnerForm({ company_name: '', contact_email: '' });
+      fetchPartners();
+      alert(`Partner created! ${partnerForm.contact_email} can now log in at /partner/login`);
+    } catch (err: any) { alert(err.message); } finally { setAddingPartner(false); }
+  };
+  const handleApprovePartner = async (partnerId: string, userId: string) => {
+    try {
+      await supabase.from('partner_profiles').update({ status: 'approved' }).eq('id', partnerId);
+      await supabase.from('profiles').update({ role: 'partner' }).eq('id', userId);
+      fetchPartners();
+    } catch (e: any) { alert(e.message); }
+  };
+  const handleRejectPartner = async (partnerId: string) => {
+    if (!confirm('Reject this application?')) return;
+    try {
+      await supabase.from('partner_profiles').update({ status: 'rejected' }).eq('id', partnerId);
+      fetchPartners();
+    } catch (e: any) { alert(e.message); }
+  };
+  const deletePartner = async (id: string, userId: string) => {
+    if (!confirm('Remove partner? Their login role will revert to "user".')) return;
+    await supabase.from('partner_profiles').delete().eq('id', id);
+    await supabase.from('profiles').update({ role: 'user' }).eq('id', userId);
+    fetchPartners();
   };
 
   // ─── Partner Merch ───
@@ -516,7 +619,7 @@ export default function AdminDashboard() {
     { id: 'orders', label: 'Orders', icon: <ShoppingBag className="w-4 h-4" />, badge: orders.filter((o:any) => !o.shipped).length || undefined },
     { id: 'vouchers', label: 'Vouchers', icon: <Tag className="w-4 h-4" /> },
     { id: 'partner_merch', label: 'Partner Merch', icon: <Gift className="w-4 h-4" /> },
-    { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
+    { id: 'partners', label: 'Partners', icon: <Handshake className="w-4 h-4" />, badge: partners.length || undefined },
   ];
 
   const ImageUploadBox = ({ preview, onFile, inputRef, label }: { preview: string | null; onFile: (f: File) => void; inputRef: React.RefObject<HTMLInputElement | null>; label?: string }) => (
@@ -534,6 +637,50 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 fade-in">
       <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
+
+      {/* ─── Partner Analytics Modal ─── */}
+      {analyticsModalPartner && (() => {
+        const stats = partnerAnalytics[analyticsModalPartner.id] || { redemptions: 0, settlement: 0 };
+        return (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4" onClick={() => setAnalyticsModalPartner(null)}>
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+            <div
+              className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full z-10"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setAnalyticsModalPartner(null)}
+                className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="bg-[rgba(46,125,50,0.1)] w-14 h-14 rounded-2xl flex items-center justify-center text-[#2e7d32] font-black text-2xl">
+                  {analyticsModalPartner.company_name[0]}
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-[#1a3d1f]">{analyticsModalPartner.company_name}</h2>
+                  <p className="text-xs text-[#5f7a60]">{analyticsModalPartner.contact_email}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-[rgba(46,125,50,0.06)] rounded-2xl p-5 text-center border border-[rgba(46,125,50,0.12)]">
+                  <p className="text-3xl font-black text-[#2e7d32]">{stats.redemptions}</p>
+                  <p className="text-xs text-[#5f7a60] mt-1 font-semibold">Total Redemptions</p>
+                </div>
+                <div className="bg-amber-50 rounded-2xl p-5 text-center border border-amber-100">
+                  <p className="text-3xl font-black text-amber-600">₹{stats.settlement.toFixed(0)}</p>
+                  <p className="text-xs text-[#5f7a60] mt-1 font-semibold">TechzGreen Owes</p>
+                </div>
+              </div>
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-sm text-blue-700">
+                <p className="font-bold mb-1">Settlement Breakdown</p>
+                <p>Each redemption deducts the discount value from the user bill. TechzGreen owes the partner the settlement amount shown above.</p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       {/* Header */}
       <div className="glass-panel-dark p-6 sm:p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]"></div>
@@ -890,64 +1037,198 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ═══ VOUCHERS TAB ═══ */}
       {activeTab === 'vouchers' && (
         <div className="grid lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2">
-            <div className="glass-panel p-8 sticky top-24">
-              <h2 className="text-xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2"><Tag className="w-5 h-5 text-[#2e7d32]" /> Create Voucher</h2>
+            <div className="glass-panel p-6 sticky top-24">
+              <h2 className="text-xl font-bold text-[#1a3d1f] mb-5 flex items-center gap-2"><Tag className="w-5 h-5 text-[#2e7d32]" /> Create Voucher</h2>
               <form onSubmit={handleAddVoucher} className="space-y-4">
+                <ImageUploadBox preview={voucherImagePreview} inputRef={voucherFileRef} label="Voucher Image" onFile={f => { setVoucherImageFile(f); setVoucherImagePreview(URL.createObjectURL(f)); }} />
                 <div>
                   <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Brand Name *</label>
-                  <input required value={voucherForm.brand_name} onChange={e => setVoucherForm(f => ({ ...f, brand_name: e.target.value }))} placeholder="e.g. Amazon" className="input-glass" />
+                  <input required value={voucherForm.brand_name} onChange={e => setVoucherForm(f => ({ ...f, brand_name: e.target.value }))} placeholder="e.g. Zomato" className="input-glass" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Voucher Title *</label>
-                  <input required value={voucherForm.title} onChange={e => setVoucherForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. ₹500 Gift Card" className="input-glass" />
+                  <input required value={voucherForm.title} onChange={e => setVoucherForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Dinner Discount" className="input-glass" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Description</label>
                   <textarea rows={2} value={voucherForm.description} onChange={e => setVoucherForm(f => ({ ...f, description: e.target.value }))} className="input-glass resize-none" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Points Cost *</label>
-                    <input required type="number" min="1" value={voucherForm.points_cost} onChange={e => setVoucherForm(f => ({ ...f, points_cost: e.target.value }))} placeholder="50" className="input-glass" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Base Promo Code</label>
-                    <input value={voucherForm.promo_code} onChange={e => setVoucherForm(f => ({ ...f, promo_code: e.target.value }))} placeholder="e.g. AMZ500" className="input-glass" />
+                {/* Discount Type */}
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-2">Discount Type *</label>
+                  <div className="flex rounded-xl overflow-hidden border border-[rgba(46,125,50,0.2)]">
+                    <button type="button" onClick={() => setVoucherForm(f => ({ ...f, discount_type: 'flat' }))}
+                      className={`flex-1 py-2 text-sm font-bold transition-colors cursor-pointer ${voucherForm.discount_type === 'flat' ? 'bg-blue-600 text-white' : 'text-[#5f7a60] hover:text-[#1a3d1f]'}`}>
+                      ₹ Flat Amount Off
+                    </button>
+                    <button type="button" onClick={() => setVoucherForm(f => ({ ...f, discount_type: 'percent' }))}
+                      className={`flex-1 py-2 text-sm font-bold transition-colors cursor-pointer ${voucherForm.discount_type === 'percent' ? 'bg-amber-500 text-white' : 'text-[#5f7a60] hover:text-[#1a3d1f]'}`}>
+                      % Percent Off
+                    </button>
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">
+                      {voucherForm.discount_type === 'flat' ? 'Amount Off (₹) *' : 'Percent Off (%) *'}
+                    </label>
+                    <input required type="number" min="0.01" step="0.01" max={voucherForm.discount_type === 'percent' ? '100' : undefined}
+                      value={voucherForm.discount_value}
+                      onChange={e => setVoucherForm(f => ({ ...f, discount_value: e.target.value }))}
+                      placeholder={voucherForm.discount_type === 'flat' ? 'e.g. 40' : 'e.g. 20'}
+                      className="input-glass" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">G Coins Cost *</label>
+                    <input required type="number" min="1" value={voucherForm.points_cost} onChange={e => setVoucherForm(f => ({ ...f, points_cost: e.target.value }))} placeholder="50" className="input-glass" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Per-User Limit *</label>
+                  <input required type="number" min="1" value={voucherForm.user_limit} onChange={e => setVoucherForm(f => ({ ...f, user_limit: e.target.value }))} placeholder="1" className="input-glass" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Start Date (optional)</label>
+                    <input type="datetime-local" value={voucherForm.start_date} onChange={e => setVoucherForm(f => ({ ...f, start_date: e.target.value }))} className="input-glass" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">End Date (optional)</label>
+                    <input type="datetime-local" value={voucherForm.end_date} onChange={e => setVoucherForm(f => ({ ...f, end_date: e.target.value }))} className="input-glass" />
+                  </div>
+                </div>
+                {/* Link partner */}
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Link to Partner (optional)</label>
+                  <select value={voucherForm.partner_id} onChange={e => setVoucherForm(f => ({ ...f, partner_id: e.target.value }))} className="input-glass w-full">
+                    <option value="">-- Any store / no restriction --</option>
+                    {partners.map((p: any) => (
+                      <option key={p.id} value={p.id}>{p.company_name} ({p.contact_email})</option>
+                    ))}
+                  </select>
+                </div>
                 <button type="submit" disabled={addingVoucher} className="btn-primary w-full flex items-center justify-center gap-2 !py-3 disabled:opacity-50">
-                  {addingVoucher ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Adding...</> : <><Tag className="w-4 h-4" /> Add Voucher</>}
+                  {addingVoucher ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Adding...</> : <><Tag className="w-4 h-4" /> Create Voucher</>}
                 </button>
               </form>
             </div>
           </div>
           <div className="lg:col-span-3">
-            <h2 className="text-xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2"><Gift className="w-5 h-5" /> Active Vouchers ({vouchers.length})</h2>
+            <h2 className="text-xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2"><Gift className="w-5 h-5" /> All Vouchers ({vouchers.length})</h2>
             {vouchers.length === 0 ? <div className="glass-panel p-16 text-center"><Tag className="w-12 h-12 text-[rgba(46,125,50,0.2)] mx-auto mb-3" /><p className="text-[#5f7a60]">No vouchers created yet.</p></div> : (
               <div className="space-y-4">
-                {vouchers.map((v: any) => (
-                  <div key={v.id} className="glass-card p-4 flex gap-4 items-center">
-                    <div className="flex-grow min-w-0">
-                      <h3 className="font-bold text-[#1a3d1f]">{v.title} <span className="text-sm font-normal text-[#5f7a60]">({v.brand_name})</span></h3>
-                      <p className="text-xs text-[#5f7a60] line-clamp-1 mt-1">{v.description}</p>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="font-black text-[#ffb300] text-sm flex items-center gap-1"><Star className="w-3.5 h-3.5 fill-[#ffb300]" /> {v.points_cost} pts</span>
-                        {v.promo_code && <span className="text-xs font-mono font-bold bg-gray-100 px-2 py-0.5 rounded">{v.promo_code}</span>}
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${v.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>{v.is_active ? 'Active' : 'Hidden'}</span>
+                {vouchers.map((v: any) => {
+                  const isFlat = v.discount_type === 'flat';
+                  return (
+                    <div key={v.id} className="glass-card p-4 flex gap-4 items-start">
+                      {v.image_url && <img src={v.image_url} alt={v.title} className="w-16 h-16 object-cover rounded-xl flex-shrink-0" />}
+                      <div className="flex-grow min-w-0">
+                        <div className="flex items-start gap-2 flex-wrap">
+                          <h3 className="font-bold text-[#1a3d1f]">{v.title} <span className="text-sm font-normal text-[#5f7a60]">({v.brand_name})</span></h3>
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg uppercase flex-shrink-0 ${isFlat ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                            {isFlat ? `₹${v.discount_value} FLAT` : `${v.discount_value}% OFF`}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#5f7a60] line-clamp-1 mt-1">{v.description}</p>
+                        <div className="flex items-center gap-3 mt-2 flex-wrap">
+                          <span className="font-black text-[#ffb300] text-sm flex items-center gap-1"><Star className="w-3.5 h-3.5 fill-[#ffb300]" /> {v.points_cost} G</span>
+                          {v.partner_profiles && <span className="text-xs text-[#5f7a60] bg-[rgba(46,125,50,0.08)] px-2 py-0.5 rounded-lg">🏪 {v.partner_profiles.company_name}</span>}
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${v.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>{v.is_active ? 'Active' : 'Hidden'}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button onClick={() => toggleVoucher(v.id, v.is_active)} className="p-2 rounded-xl hover:bg-[rgba(46,125,50,0.1)] text-[#2e7d32] cursor-pointer">
+                          {v.is_active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
+                        </button>
+                        <button onClick={() => deleteVoucher(v.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button onClick={() => toggleVoucher(v.id, v.is_active)} className="p-2 rounded-xl hover:bg-[rgba(46,125,50,0.1)] text-[#2e7d32] cursor-pointer">
-                        {v.is_active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
-                      </button>
-                      <button onClick={() => deleteVoucher(v.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══ PARTNERS TAB ═══ */}
+      {activeTab === 'partners' && (
+        <div className="grid lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2">
+            <div className="glass-panel p-6 sticky top-24">
+              <h2 className="text-xl font-bold text-[#1a3d1f] mb-2 flex items-center gap-2"><Handshake className="w-5 h-5 text-[#2e7d32]" /> Add Partner</h2>
+              <p className="text-xs text-[#5f7a60] mb-5 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                Partner must first sign up at /signup. Enter their registered email here to grant partner access.
+              </p>
+              <form onSubmit={handleAddPartner} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Company Name *</label>
+                  <input required value={partnerForm.company_name} onChange={e => setPartnerForm(f => ({ ...f, company_name: e.target.value }))} placeholder="e.g. EcoMart Stores" className="input-glass" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Partner's Registered Email *</label>
+                  <input required type="email" value={partnerForm.contact_email} onChange={e => setPartnerForm(f => ({ ...f, contact_email: e.target.value }))} placeholder="partner@ecomart.com" className="input-glass" />
+                </div>
+                <button type="submit" disabled={addingPartner} className="btn-primary w-full flex items-center justify-center gap-2 !py-3 disabled:opacity-50">
+                  {addingPartner ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Creating...</> : <><Handshake className="w-4 h-4" /> Create Partner</>}
+                </button>
+              </form>
+            </div>
+          </div>
+          <div className="lg:col-span-3">
+            {partners.filter((p: any) => p.status === 'pending').length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-amber-600 mb-4 flex items-center gap-2"><ClipboardList className="w-5 h-5" /> Pending Requests ({partners.filter((p: any) => p.status === 'pending').length})</h2>
+                <div className="space-y-4">
+                  {partners.filter((p: any) => p.status === 'pending').map((p: any) => (
+                    <div key={p.id} className="glass-card p-5 border-l-4 border-l-amber-400 flex gap-4 items-center">
+                      <div className="flex-grow min-w-0">
+                        <h3 className="font-bold text-[#1a3d1f]">{p.company_name}</h3>
+                        <p className="text-xs text-[#5f7a60]">{p.contact_email}</p>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button onClick={() => handleApprovePartner(p.id, p.user_id)} className="px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 text-sm font-bold rounded-lg transition-colors">Approve</button>
+                        <button onClick={() => handleRejectPartner(p.id)} className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 text-sm font-bold rounded-lg transition-colors">Reject</button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <h2 className="text-xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Approved Partners ({partners.filter((p: any) => p.status !== 'pending' && p.status !== 'rejected').length})</h2>
+            {partners.filter((p: any) => p.status !== 'pending' && p.status !== 'rejected').length === 0 ? (
+              <div className="glass-panel p-16 text-center"><Handshake className="w-12 h-12 text-[rgba(46,125,50,0.2)] mx-auto mb-3" /><p className="text-[#5f7a60]">No partner companies added yet.</p></div>
+            ) : (
+              <div className="space-y-3">
+                {partners.filter((p: any) => p.status !== 'pending' && p.status !== 'rejected').map((p: any) => {
+                  const stats = partnerAnalytics[p.id] || { redemptions: 0, settlement: 0 };
+                  return (
+                    <div key={p.id} className="glass-card p-4 flex gap-3 items-center">
+                      <div className="bg-[rgba(46,125,50,0.1)] w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-[#2e7d32] font-black">
+                        {p.company_name[0]}
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="font-bold text-[#1a3d1f] text-sm">{p.company_name}</h3>
+                        <p className="text-xs text-[#5f7a60]">{stats.redemptions} redemptions · ₹{stats.settlement.toFixed(0)} owed</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => setAnalyticsModalPartner(p)}
+                          className="px-2.5 py-1.5 text-xs font-bold bg-[rgba(46,125,50,0.08)] text-[#2e7d32] hover:bg-[rgba(46,125,50,0.15)] rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <BarChart3 className="w-3.5 h-3.5" /> Analytics
+                        </button>
+                        <button onClick={() => deletePartner(p.id, p.user_id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1026,15 +1307,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ═══ SETTINGS TAB ═══ */}
-      {activeTab === 'settings' && (
-        <div className="max-w-lg">
-          <div className="glass-panel p-8">
-            <h2 className="text-2xl font-bold text-[#1a3d1f] mb-2 flex items-center gap-2"><Settings className="w-6 h-6 text-[#2e7d32]" /> Platform Settings</h2>
-            <p className="text-[#5f7a60] text-sm">Redemption is now configured per product (Discount % + G Coins required) on the Products tab.</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

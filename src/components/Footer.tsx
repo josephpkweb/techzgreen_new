@@ -80,6 +80,7 @@ export default function Footer() {
                 { label: 'Events', to: '/events' },
                 { label: 'Earn Points', to: '/rewards' },
                 { label: 'Dashboard', to: '/dashboard' },
+                { label: 'Partner Portal', to: '/partner/login' },
               ].map(({ label, to }) => (
                 <li key={label}>
                   <Link

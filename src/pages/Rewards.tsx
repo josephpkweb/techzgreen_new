@@ -2,10 +2,77 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { UploadCloud, CheckCircle2, Leaf, Clock, XCircle, Gift, Tag, Star } from 'lucide-react';
+import { UploadCloud, CheckCircle2, Leaf, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
 import QRCode from 'react-qr-code';
+import Barcode from 'react-barcode';
 import type { Submission } from '../types';
+
+// MyVoucherCard: compact card showing QR or Barcode
+function MyVoucherCard({ uv, scanCode, isUsed }: { uv: any; scanCode: string; isUsed: boolean }) {
+  const [displayMode, setDisplayMode] = useState<'qr' | 'barcode'>('qr');
+  const v = uv.vouchers;
+  const isFlat = v?.discount_type === 'flat';
+  const discountLabel = isFlat ? `₹${v?.discount_value} OFF` : `${v?.discount_value}% OFF`;
+
+  return (
+    <div className={`bg-gradient-to-r from-[#1a3d1f] to-[#2e7d32] rounded-xl p-3.5 text-white shadow-md relative overflow-hidden ${isUsed ? 'opacity-50 grayscale' : ''}`}>
+      <div className="absolute right-0 top-0 h-full w-24 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+      <div className="relative z-10">
+        {/* Header row */}
+        <div className="flex items-center justify-between gap-2 mb-0.5">
+          <p className="text-amber-300 font-bold text-[10px] uppercase tracking-wider truncate">{v?.brand_name}</p>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="bg-white/20 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md">{discountLabel}</span>
+            {isUsed && <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">Used</span>}
+          </div>
+        </div>
+        <h3 className="font-black text-sm leading-tight mb-0.5 truncate">{v?.title}</h3>
+
+        {/* QR / Barcode toggle */}
+        {!isUsed && (
+          <>
+            <div className="flex rounded-md overflow-hidden border border-white/20 mb-2 mt-2">
+              <button
+                onClick={() => setDisplayMode('qr')}
+                className={`flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-bold transition-colors cursor-pointer ${displayMode === 'qr' ? 'bg-white text-[#1a3d1f]' : 'text-white/70 hover:text-white'}`}
+              >
+                <QrCode className="w-2.5 h-2.5" /> QR Code
+              </button>
+              <button
+                onClick={() => setDisplayMode('barcode')}
+                className={`flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-bold transition-colors cursor-pointer ${displayMode === 'barcode' ? 'bg-white text-[#1a3d1f]' : 'text-white/70 hover:text-white'}`}
+              >
+                <Tag className="w-2.5 h-2.5" /> Barcode
+              </button>
+            </div>
+            <div className="bg-white rounded-lg p-2 flex justify-center items-center overflow-hidden">
+              {displayMode === 'qr' ? (
+                <QRCode value={scanCode} size={80} level="M" />
+              ) : (
+                <Barcode
+                  value={scanCode}
+                  width={1.0}
+                  height={45}
+                  fontSize={8}
+                  displayValue
+                  background="#ffffff"
+                  lineColor="#1a3d1f"
+                />
+              )}
+            </div>
+            <p className="text-center text-[9px] text-white/50 mt-1.5">Show this at the store to redeem</p>
+          </>
+        )}
+        {isUsed && (
+          <div className="bg-white/10 rounded-lg p-2 text-center text-xs text-white/60 mt-2">
+            Redeemed · {uv.used_at ? new Date(uv.used_at).toLocaleDateString('en-IN') : ''}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Rewards() {
   const { user, totalPoints, refreshPoints } = useAuth();
@@ -42,7 +109,21 @@ export default function Rewards() {
 
   const fetchMyVouchers = async () => {
     if (!user) return;
-    const { data } = await supabase.from('user_vouchers').select('*, vouchers(*)').eq('user_id', user.id).order('redeemed_at', { ascending: false });
+    // Client-side cleanup: delete used vouchers older than 1 day
+    // (fallback when pg_cron not available)
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    await supabase
+      .from('user_vouchers')
+      .delete()
+      .eq('user_id', user.id)
+      .not('used_at', 'is', null)
+      .lt('used_at', cutoff);
+
+    const { data } = await supabase
+      .from('user_vouchers')
+      .select('*, vouchers(*)')
+      .eq('user_id', user.id)
+      .order('redeemed_at', { ascending: false });
     if (data) setMyVouchers(data);
   };
 
@@ -86,6 +167,20 @@ export default function Rewards() {
   const buyVoucher = async (voucher: any) => {
     if (!user) return;
     if (totalPoints < voucher.points_cost) { alert("Not enough points!"); return; }
+    
+    // Check limit
+    const limit = voucher.user_limit || 1;
+    const boughtCount = myVouchers.filter((v: any) => v.voucher_id === voucher.id).length;
+    if (boughtCount >= limit) {
+      alert(`Limit reached! You can only buy this voucher ${limit} time(s).`);
+      return;
+    }
+
+    if (voucher.end_date && new Date(voucher.end_date) < new Date()) {
+      alert("This voucher has expired.");
+      return;
+    }
+
     setBuying(true);
     try {
       const { error: ledgerError } = await supabase.from('points_ledger').insert({ user_id: user.id, points_change: -voucher.points_cost, description: `Purchased voucher: ${voucher.title}` });
@@ -243,24 +338,52 @@ export default function Rewards() {
             <div>
               <h2 className="text-lg font-bold text-[#1a3d1f] mb-4 flex items-center gap-2"><Tag className="text-[#ffb300] w-5 h-5" />Voucher Store</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {vouchers.map(v => (
-                  <div key={v.id} className="glass-panel p-6 flex flex-col relative overflow-hidden group hover:border-[#ffb300] transition-colors cursor-pointer">
-                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-amber-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
-                    <h3 className="font-bold text-xl text-[#1a3d1f] relative z-10">{v.brand_name}</h3>
-                    <p className="text-[#2e7d32] font-black text-2xl mt-1 mb-3 relative z-10">{v.title}</p>
+              {vouchers.map(v => {
+                const isFlat = v.discount_type === 'flat';
+                const discountLabel = isFlat ? `₹${v.discount_value} OFF` : `${v.discount_value}% OFF`;
+                const limit = v.user_limit || 1;
+                const boughtCount = myVouchers.filter((mv: any) => mv.voucher_id === v.id).length;
+                const canBuyMore = boughtCount < limit;
+                const isExpired = v.end_date && new Date(v.end_date) < new Date();
+                
+                return (
+                  <div key={v.id} className={`glass-panel p-6 flex flex-col relative overflow-hidden group transition-colors ${isExpired ? 'opacity-75 grayscale-[0.5]' : 'hover:border-[#ffb300]'}`}>
+                    {/* Voucher image */}
+                    {v.image_url && <img src={v.image_url} alt={v.title} className="w-full h-28 object-cover rounded-xl mb-4" />}
+                    <div className="absolute -right-4 -top-4 w-20 h-20 bg-amber-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500" />
+                    <div className="flex items-start justify-between gap-2 relative z-10">
+                      <h3 className="font-bold text-xl text-[#1a3d1f]">{v.brand_name}</h3>
+                      <span className={`text-xs font-black px-2 py-1 rounded-lg whitespace-nowrap flex-shrink-0 ${isFlat ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                        {discountLabel}
+                      </span>
+                    </div>
+                    <p className="text-[#2e7d32] font-black text-xl mt-1 mb-2 relative z-10">{v.title}</p>
                     <p className="text-[#5f7a60] text-sm flex-grow relative z-10">{v.description}</p>
+                    
+                    <div className="mt-2 relative z-10">
+                      <p className="text-xs font-bold text-[#ffb300]">
+                        Limit: {boughtCount} / {limit} redeemed
+                      </p>
+                      {v.end_date && (
+                        <p className={`text-xs font-bold mt-1 ${isExpired ? 'text-red-500' : 'text-gray-500'}`}>
+                          Ends: {new Date(v.end_date).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+
                     <div className="mt-6 pt-4 border-t border-[rgba(46,125,50,0.1)] flex items-center justify-between relative z-10">
                       <span className="font-bold text-[#ffb300] flex items-center gap-1"><GCoinIcon size={22} /> {v.points_cost} G Coins</span>
                       <button
                         onClick={() => buyVoucher(v)}
-                        disabled={buying || totalPoints < v.points_cost}
-                        className="bg-[#2e7d32] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#1b5e20] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        disabled={buying || totalPoints < v.points_cost || !canBuyMore || isExpired}
+                        className={`text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed cursor-pointer ${isExpired ? 'bg-gray-500' : 'bg-[#2e7d32] hover:bg-[#1b5e20] disabled:opacity-50'}`}
                       >
-                        {totalPoints >= v.points_cost ? 'Buy Voucher' : 'Not enough G Coins'}
+                        {isExpired ? 'Expired' : !canBuyMore ? 'Limit Reached' : totalPoints >= v.points_cost ? 'Activate Voucher' : 'Not enough G Coins'}
                       </button>
                     </div>
                   </div>
-                ))}
+                );
+              })}
                 {vouchers.length === 0 && (
                   <div className="col-span-3 text-center py-10 text-gray-500">No vouchers available right now.</div>
                 )}
@@ -271,23 +394,14 @@ export default function Rewards() {
             <div>
               <h2 className="text-lg font-bold text-[#1a3d1f] mb-4 flex items-center gap-2"><Gift className="text-[#2e7d32] w-5 h-5" />My Vouchers</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {myVouchers.map(uv => (
-                  <div key={uv.id} className="bg-gradient-to-r from-[#1a3d1f] to-[#2e7d32] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-                    <div className="absolute right-0 top-0 h-full w-32 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                    <div className="relative z-10">
-                      <p className="text-amber-300 font-bold text-sm uppercase tracking-wider mb-1">{uv.vouchers.brand_name}</p>
-                      <h3 className="font-black text-2xl mb-2">{uv.vouchers.title}</h3>
-                      <p className="text-green-100 text-sm mb-6">{uv.vouchers.description}</p>
-                      <div className="bg-white/10 rounded-lg p-3 flex justify-between items-center backdrop-blur-sm border border-white/20 mb-3">
-                        <span className="text-sm text-green-50 font-medium">Promo Code</span>
-                        <span className="font-mono font-black text-lg tracking-widest">{uv.vouchers.promo_code}</span>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 flex justify-center items-center">
-                        <QRCode value={uv.id} size={100} level="M" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {myVouchers.map(uv => {
+                  // Always use row id as scan code — partner lookup checks qr_code then id
+                  const scanCode = uv.id;
+                  const isUsed = !!uv.used_at; // used_at is set on redemption
+                  return (
+                    <MyVoucherCard key={uv.id} uv={uv} scanCode={scanCode} isUsed={isUsed} />
+                  );
+                })}
                 {myVouchers.length === 0 && (
                   <div className="col-span-2 glass-panel p-8 text-center">
                     <Gift className="w-10 h-10 text-[rgba(46,125,50,0.25)] mx-auto mb-2" />
