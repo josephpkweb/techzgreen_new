@@ -1,6 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Recycle, Star, Leaf, Users, ArrowRight, CheckCircle, Globe, Award, Heart, Package } from 'lucide-react';
+import josephImg from '../assets/joseph.png';
+import akhilImg from '../assets/Akhil James K.png';
+import jitheshImg from '../assets/Jithesh Francis.png';
 
 export default function About() {
   return (
@@ -35,7 +38,7 @@ export default function About() {
                 </span>
               </h1>
               <p className="text-lg text-[#5f7a60] leading-relaxed max-w-md">
-                At Techzgreen, we transform plastic waste — especially Multi-Layer Plastic (MLP) — into durable and valuable products through innovative recycling and upcycling technologies. Our mission is to help industries, institutions, and communities implement effective waste management systems while converting non-valuable plastic waste into high-quality, long-lasting materials.
+                At Techzgreen, we transform plastic waste — especially Multi-Layer Plastic (MLP) — into durable, eco-friendly products through innovative recycling and upcycling technologies. Our mission is to help industries, institutions, and communities build sustainable waste management solutions while promoting a circular economy. We also provide sustainability consultation for corporates, conduct plastic waste collection campaigns, and organize environmental awareness programs to create a greener future.
               </p>
               <Link to="/signup" className="btn-primary inline-flex items-center gap-2 w-fit">
                 Join Our Movement <ArrowRight className="w-4 h-4" />
@@ -221,36 +224,35 @@ export default function About() {
           <div className="grid sm:grid-cols-3 gap-8">
             {[
               {
-                name: 'Founder Name',
-                role: 'CEO & Co-Founder',
-                bio: 'Visionary behind TechzGreen\'s circular economy model. 10+ years in sustainable manufacturing and MLP recycling technology.',
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300&h=300',
+                name: 'Joseph P K',
+                role: 'Founder & CEO',
+                bio: 'Electrical & Electronics Engineer with 5+ years of experience in India and GCC, combining embedded systems expertise with project execution and business development. With 8 years of deep involvement in the waste management sector, brings a unique blend of engineering innovation, industry knowledge, and business development capability to build scalable and sustainable solutions.',
+                avatar: josephImg,
+                linkedin: 'https://www.linkedin.com/in/asish-joseph-p-k',
               },
               {
-                name: 'Founder Name',
-                role: 'CTO & Co-Founder',
-                bio: 'Leads product innovation and recycling process engineering. Passionate about converting waste streams into high-value materials.',
-                avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300&h=300',
+                name: 'Akhil James K',
+                role: 'C0 – Founder & COO',
+                bio: 'Electrical & Electronics Engineer graduated in 2020 with five years of technical experience spanning engineering design, product management, and strategic innovation at a prominent Indian MNC. A passionate ecopreneur dedicated to developing sustainable, scalable solutions for a cleaner planet.',
+                avatar: akhilImg,
+                linkedin: 'https://www.linkedin.com/in/akhiljamesk',
               },
               {
-                name: 'Founder Name',
-                role: 'COO & Co-Founder',
-                bio: 'Drives community engagement and operational scale. Built TechzGreen\'s network of 1,200+ eco-warriors from the ground up.',
-                avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300&h=300',
+                name: 'Jithesh Francis C',
+                role: 'C0 – Founder & CMO',
+                bio: 'Holds a postgraduate MSc in Computer Science with 13 years of experience in sales and marketing across India and international markets. Key competencies include strategic communication, data analysis, CRM proficiency, negotiation, and adaptability — converting attention into monetary value through tailored strategies.',
+                avatar: jitheshImg,
+                linkedin: 'https://www.linkedin.com/in/jithesh-francis-185934395',
               },
-            ].map(({ name, role, bio, avatar }) => (
-              <div key={role} className="glass-card p-8 flex flex-col items-center text-center group">
+            ].map(({ name, role, bio, avatar, linkedin }) => (
+              <div key={role} className="glass-card flex flex-col items-center text-center group overflow-hidden">
                 {/* Avatar */}
-                <div className="relative mb-5">
-                  <img
-                    src={avatar}
-                    alt={name}
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-[rgba(46,125,50,0.2)] group-hover:border-[#2e7d32] transition-colors"
-                  />
-                  <div className="absolute -bottom-2 -right-2 bg-[#2e7d32] w-7 h-7 rounded-lg flex items-center justify-center border-2 border-white shadow">
-                    <Leaf className="w-3.5 h-3.5 text-white" />
-                  </div>
-                </div>
+                <img
+                  src={avatar}
+                  alt={name}
+                  className="w-full aspect-square object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="p-6 flex flex-col items-center flex-grow">
                 {/* Info */}
                 <h3 className="text-lg font-black text-[#1a3d1f]">{name}</h3>
                 <span className="text-xs font-bold text-[#2e7d32] bg-[rgba(46,125,50,0.1)] px-3 py-1 rounded-full border border-[rgba(46,125,50,0.2)] mt-2 mb-3">
@@ -259,12 +261,10 @@ export default function About() {
                 <p className="text-[#5f7a60] text-sm leading-relaxed flex-grow">{bio}</p>
                 {/* Social links */}
                 <div className="flex gap-3 mt-5">
-                  <a href="#" aria-label="LinkedIn" className="w-8 h-8 rounded-lg bg-[rgba(46,125,50,0.08)] hover:bg-[#2e7d32] text-[#5f7a60] hover:text-white transition-all flex items-center justify-center">
+                  <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-lg bg-[rgba(46,125,50,0.08)] hover:bg-[#2e7d32] text-[#5f7a60] hover:text-white transition-all flex items-center justify-center">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                   </a>
-                  <a href="#" aria-label="Twitter / X" className="w-8 h-8 rounded-lg bg-[rgba(46,125,50,0.08)] hover:bg-[#2e7d32] text-[#5f7a60] hover:text-white transition-all flex items-center justify-center">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.536-8.626L2.25 2.25h6.832l4.26 5.636zm-1.16 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  </a>
+                </div>
                 </div>
               </div>
             ))}

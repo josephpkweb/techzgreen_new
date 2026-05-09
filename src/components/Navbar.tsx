@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, LayoutDashboard, LogOut, LogIn, Calendar, Home, Store, Menu, X, Info, User, Package } from 'lucide-react';
+import fullLogo from '../assets/full_logo.png';
 import { GCoinIcon } from './GCoin';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -61,11 +62,8 @@ export default function Navbar() {
         <nav className="glass-nav max-w-7xl mx-auto rounded-2xl px-4 sm:px-6">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group cursor-pointer">
-              <img src="/favicon.png" alt="TechzGreen" className="h-8 w-8 rounded-lg object-contain" />
-              <span className="font-black text-lg tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                <span className="text-[#111111]">Techz</span><span className="text-[#2e7d32]">Green</span>
-              </span>
+            <Link to="/" className="flex items-center cursor-pointer">
+              <img src={fullLogo} alt="TechzGreen" className="h-10 w-auto object-contain" />
             </Link>
 
             {/* Desktop Nav Links */}
