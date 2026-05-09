@@ -1,4 +1,33 @@
 import { useState } from 'react';
+import zCeil2 from '../assets/z ceiling/2.webp';
+import zCeil3 from '../assets/z ceiling/3.jpg';
+import zCeil18 from '../assets/z ceiling/18.webp';
+import zCeil19 from '../assets/z ceiling/19.jpg';
+import zCeil22 from '../assets/z ceiling/22.jpeg';
+import zPanel1 from '../assets/Z panel/1.png';
+import zPanel2 from '../assets/Z panel/2.png';
+import zPanel4 from '../assets/Z panel/4.png';
+import zPanel5 from '../assets/Z panel/5.jpeg';
+import zPanel6 from '../assets/Z panel/6.jpeg';
+import zPanel7 from '../assets/Z panel/7.png';
+import zPanel8 from '../assets/Z panel/8.jpeg';
+import zRoof1 from '../assets/Z roofing/1.png';
+import zRoof2 from '../assets/Z roofing/2.jpeg';
+import zRoof3 from '../assets/Z roofing/3.png';
+import zRoof4 from '../assets/Z roofing/4.png';
+import zRoof5 from '../assets/Z roofing/5.jpeg';
+import zRoof6 from '../assets/Z roofing/6.jpeg';
+import zPole1 from '../assets/Z pole/15050w-1000x638.png';
+import zPole2 from '../assets/Z pole/cyruPLQslnd2euc3tZ00XY1TWtOFRATB1662037381.jpeg';
+import zPole3 from '../assets/Z pole/images (10).jpeg';
+import zPole4 from '../assets/Z pole/images (11).jpeg';
+import zPole5 from '../assets/Z pole/recycled-lumber-250x250.jpg.jpeg';
+import zPole6 from '../assets/Z pole/Substructure3_1823ec89-d183-48ef-ad8c-4439e822278e.jpg.jpeg';
+import zPallet1 from '../assets/z pallet/1.jpeg';
+import zPallet2 from '../assets/z pallet/2.jpeg';
+import zPallet3 from '../assets/z pallet/3.png';
+import zMomento1 from '../assets/Z momento/images (12).jpeg';
+import zMomento2 from '../assets/Z momento/images (13).jpeg';
 import { Helmet } from 'react-helmet-async';
 import { Package, Leaf, X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 
@@ -19,12 +48,8 @@ const PRODUCTS: Product[] = [
     name: 'Z Panel Roofing',
     tagline: 'High-performance recycled roofing panels',
     tag: 'Industrial Grade',
-    cardImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80&w=900',
-    ],
+    cardImage: zPanel1,
+    images: [zPanel1, zPanel2, zPanel4, zPanel5, zPanel6, zPanel7, zPanel8],
     description: 'TechzGreen\'s Z Panel Roofing is engineered from 100% recycled Multi-Layer Plastic (MLP) for exceptional strength and durability. Designed for tough industrial and commercial applications, these panels withstand extreme weather conditions while delivering unmatched longevity. A direct, eco-friendly replacement for conventional roofing materials.',
     features: [
       'Exceptional load-bearing capacity',
@@ -32,6 +57,72 @@ const PRODUCTS: Product[] = [
       'Made from 100% recycled MLP plastic',
       'Waterproof, pest-proof & fungus-resistant',
       'Low maintenance — lasts decades',
+    ],
+  },
+  {
+    id: 'z-ceiling-panel',
+    name: 'Z Ceiling Panel',
+    tagline: 'Smart, waterproof ceiling panels for high-moisture spaces',
+    tag: 'New',
+    cardImage: zCeil2,
+    images: [zCeil2, zCeil3, zCeil18, zCeil19, zCeil22],
+    description: 'Z Ceiling Panel is a smart, durable, and eco-friendly ceiling solution made from advanced Z Panel technology. Designed for modern interiors, these panels excel in high-moisture environments — washrooms, kitchens, utility spaces, offices, and commercial interiors. Available in 2ft × 2ft with 3mm & 4mm thickness in an elegant white-grey mixed finish. Unlike conventional ceiling materials, Z Ceiling Panels never absorb water, warp, rust, or decay. Manufactured from recycled and sustainable materials for minimal environmental impact.',
+    features: [
+      '100% Waterproof — ideal for washrooms & kitchens',
+      '100% Pest proof, termite free & fungus free',
+      'Size: 2ft × 2ft | Thickness: 3mm & 4mm',
+      'White-grey mixed finish — clean premium look',
+      'Flexible, lightweight & easy to install',
+      'Reusable, long lasting & eco-friendly',
+      'Customization available',
+    ],
+  },
+  {
+    id: 'z-roofing',
+    name: 'Z Roofing',
+    tagline: 'Durable recycled roofing sheets for any structure',
+    tag: 'Weatherproof',
+    cardImage: zRoof1,
+    images: [zRoof1, zRoof2, zRoof3, zRoof4, zRoof5, zRoof6],
+    description: 'Z Roofing sheets deliver long-lasting weather protection for residential, agricultural, and industrial structures. Made from 100% recycled plastic, they resist corrosion, UV degradation, and extreme heat — outperforming conventional metal and fibre sheets while keeping interiors cooler.',
+    features: [
+      'UV-stable & corrosion-free',
+      'Lightweight — easy to install',
+      'Heat-reflective surface keeps interiors cool',
+      '100% recycled plastic construction',
+      'Long service life with zero rust',
+    ],
+  },
+  {
+    id: 'z-pole',
+    name: 'Z Pole',
+    tagline: 'Recycled plastic poles for fencing & support',
+    tag: 'Structural',
+    cardImage: zPole1,
+    images: [zPole1, zPole2, zPole3, zPole4, zPole5, zPole6],
+    description: 'Z Poles are heavy-duty recycled plastic posts engineered for fencing, signage, marine docks, and outdoor support structures. Unlike timber, they never rot or splinter; unlike steel, they never rust. A truly maintenance-free alternative for outdoor installations.',
+    features: [
+      'Rot-proof, rust-proof & termite-free',
+      'No painting or sealing required',
+      'Available in multiple lengths & diameters',
+      'Ideal for fencing, signage & marine use',
+      '100% recycled plastic — never warps',
+    ],
+  },
+  {
+    id: 'z-pallet',
+    name: 'Z Pallet',
+    tagline: 'Heavy-duty logistics pallets from recycled plastic',
+    tag: 'Industrial',
+    cardImage: zPallet1,
+    images: [zPallet1, zPallet2, zPallet3],
+    description: 'Z Pallets are robust, hygienic, and reusable logistics pallets manufactured from recycled plastic. Built to handle warehouse, food, pharma, and export operations, they replace traditional wooden pallets with a moisture-proof, pest-free, and fully recyclable alternative.',
+    features: [
+      'High load capacity for industrial use',
+      'Moisture-proof & easy to sanitize',
+      'Pest-free — no fumigation required',
+      'Reusable & 100% recyclable',
+      'Suitable for export & food-grade logistics',
     ],
   },
   {
@@ -55,56 +146,12 @@ const PRODUCTS: Product[] = [
     ],
   },
   {
-    id: 'school-furniture',
-    name: 'School Furniture',
-    tagline: 'Durable eco-friendly benches & desks for institutions',
-    tag: 'Institutional',
-    cardImage: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1497486751825-1233686d5d80?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=900',
-    ],
-    description: 'Built for schools, colleges, and institutions — TechzGreen\'s school furniture range includes benches, desks, and tables crafted entirely from recycled plastic. Resistant to scratches, moisture, and pests, these pieces outlast conventional wood furniture at a fraction of the environmental cost.',
-    features: [
-      'Scratch-resistant surface',
-      'No splinters — safe for children',
-      'Pest-proof & fungus-resistant',
-      'Easy to clean & maintain',
-      'Ideal for classrooms & common areas',
-    ],
-  },
-  {
-    id: 'outdoor-furniture',
-    name: 'Outdoor Furniture',
-    tagline: 'Weather-ready benches & tables for public spaces',
-    tag: 'Outdoor',
-    cardImage: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=900',
-    ],
-    description: 'Parks, gardens, bus stops, and public plazas — TechzGreen\'s outdoor furniture is engineered to thrive in Kerala\'s humid tropical climate. Crafted from recycled MLP plastic, these benches and tables never rot, rust, or require repainting, making them the lowest-maintenance outdoor solution available.',
-    features: [
-      'Fully weatherproof — rain, humidity & sun',
-      'No painting or treatment required',
-      'Anti-corrosion & rust-free',
-      'Heavy-duty load capacity',
-      'Ideal for parks, campuses & public spaces',
-    ],
-  },
-  {
     id: 'z-momento',
     name: 'Z Momento',
     tagline: 'Premium eco trophies & corporate gifts',
     tag: 'Premium Eco Trophy',
-    cardImage: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&q=80&w=900',
-    ],
+    cardImage: zMomento1,
+    images: [zMomento1, zMomento2],
     description: 'Z Momento is a premium, eco-friendly trophy and memento handcrafted from recycled plastic and MLP waste. Elegant modern design carries a powerful sustainability message — awarded at corporate events, recognition ceremonies, or given as a thoughtful corporate gift. Every piece tells a story of circular economy in action.',
     features: [
       'Premium finish — looks & feels luxurious',
@@ -112,26 +159,6 @@ const PRODUCTS: Product[] = [
       'Custom branding & engraving available',
       'Ideal for corporate events & awards',
       'Sustainable alternative to conventional trophies',
-    ],
-  },
-  {
-    id: 'custom-products',
-    name: 'Custom Products',
-    tagline: 'Bespoke recycled plastic solutions for any need',
-    tag: 'Custom',
-    cardImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80&w=900',
-    ],
-    description: 'Beyond our standard range, TechzGreen manufactures fully custom recycled plastic products to specification — from TV units and display stands to signage boards and partition systems. Share your requirements and our engineering team will design a solution that meets your functional, aesthetic, and sustainability goals.',
-    features: [
-      'Fully custom dimensions & design',
-      'Any colour or surface finish',
-      'Bulk manufacturing capability',
-      'Engineering consultation included',
-      'Corporate & institutional orders welcome',
     ],
   },
 ];
@@ -142,12 +169,14 @@ function ImageCarousel({ images, name }: { images: string[]; name: string }) {
   const next = () => setIdx(i => (i + 1) % images.length);
 
   return (
-    <div className="relative rounded-2xl overflow-hidden bg-black">
-      <img
-        src={images[idx]}
-        alt={`${name} ${idx + 1}`}
-        className="w-full h-72 sm:h-96 object-cover transition-opacity duration-300"
-      />
+    <div className="relative rounded-2xl overflow-hidden">
+      <div className="w-full h-72 sm:h-96">
+        <img
+          src={images[idx]}
+          alt={`${name} ${idx + 1}`}
+          className="w-full h-full object-contain bg-transparent transition-opacity duration-300"
+        />
+      </div>
       {images.length > 1 && (
         <>
           <button
@@ -199,7 +228,7 @@ export default function FeaturedProducts() {
         <div className="max-w-7xl mx-auto text-center">
           <span className="section-label inline-flex mb-4"><Package className="w-3.5 h-3.5" />Our Products</span>
           <h1 className="text-3xl lg:text-4xl font-black text-[#1a3d1f] mt-4">Signature Eco-Products</h1>
-          <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Six flagship products. One mission — turn plastic waste into lasting value.</p>
+          <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Seven flagship products. One mission — turn plastic waste into lasting value.</p>
         </div>
       </section>
 
@@ -213,11 +242,11 @@ export default function FeaturedProducts() {
                 onClick={() => setSelected(product)}
                 className="glass-card overflow-hidden text-left group cursor-pointer hover:shadow-lg transition-shadow"
               >
-                <div className="overflow-hidden">
+                <div className="overflow-hidden h-56">
                   <img
                     src={product.cardImage}
                     alt={product.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-contain bg-transparent group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-5">
