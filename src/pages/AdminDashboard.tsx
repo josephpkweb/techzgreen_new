@@ -190,8 +190,9 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [addingProduct, setAddingProduct] = useState(false);
-  const [productImageFile, setProductImageFile] = useState<File | null>(null);
-  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
+  // Multi-image support
+  const [productImageFiles, setProductImageFiles] = useState<File[]>([]);
+  const [productImagePreviews, setProductImagePreviews] = useState<string[]>([]);
   const [productForm, setProductForm] = useState({ name: '', description: '', price: '', stock: '', redeem_discount_percent: '', redeem_coins_required: '' });
   const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
@@ -257,7 +258,7 @@ export default function AdminDashboard() {
 
   // Mount: guard + load default tab only
   useEffect(() => {
-    if (profileRole && profileRole !== 'admin') { navigate('/dashboard'); return; }
+    if (profileRole && profileRole !== 'admin') { navigate('/profile'); return; }
     if (profileRole === 'admin') {
       fetchSubmissions();
       fetchedTabs.current.add('submissions');
@@ -322,19 +323,25 @@ export default function AdminDashboard() {
     e.preventDefault();
     setAddingProduct(true);
     try {
-      let imageUrl = '';
-      if (productImageFile) imageUrl = await uploadImage(productImageFile, 'waste-images', 'products/');
+      // Upload all images
+      const uploadedUrls: string[] = [];
+      for (const file of productImageFiles) {
+        const url = await uploadImage(file, 'waste-images', 'products/');
+        uploadedUrls.push(url);
+      }
+      const primaryImageUrl = uploadedUrls[0] || '';
       await supabase.from('products').insert({
         name: productForm.name,
         description: productForm.description,
         price: parseFloat(productForm.price),
         stock: parseInt(productForm.stock || '0', 10),
-        image_url: imageUrl,
+        image_url: primaryImageUrl,
+        image_urls: uploadedUrls,
         redeem_discount_percent: productForm.redeem_discount_percent === '' ? null : parseFloat(productForm.redeem_discount_percent),
         redeem_coins_required: productForm.redeem_coins_required === '' ? null : parseInt(productForm.redeem_coins_required, 10),
       });
       setProductForm({ name: '', description: '', price: '', stock: '', redeem_discount_percent: '', redeem_coins_required: '' });
-      setProductImageFile(null); setProductImagePreview(null);
+      setProductImageFiles([]); setProductImagePreviews([]);
       if (productFileRef.current) productFileRef.current.value = '';
       fetchProducts();
     } catch (e: any) { alert(e.message); } finally { setAddingProduct(false); }
@@ -686,7 +693,7 @@ export default function AdminDashboard() {
         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]"></div>
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
           <div className="flex items-center gap-4">
-            <div className="bg-white/15 p-3 rounded-2xl flex-shrink-0"><Leaf className="w-7 h-7 text-[#ffb300]" /></div>
+            <div className="bg-white/15 p-3 rounded-2xl flex-shrink-0"><ZLeaf className="w-7 h-7" color="black" /></div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">Admin Dashboard</h1>
               <p className="text-[rgba(200,230,201,0.8)] text-sm mt-0.5">Manage everything from one place.</p>
@@ -758,7 +765,42 @@ export default function AdminDashboard() {
             <div className="glass-panel p-8 sticky top-24">
               <h2 className="text-xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2"><Plus className="w-5 h-5 text-[#2e7d32]" /> Add New Product</h2>
               <form onSubmit={handleAddProduct} className="space-y-4">
-                <ImageUploadBox preview={productImagePreview} inputRef={productFileRef} label="Product Image" onFile={f => { setProductImageFile(f); setProductImagePreview(URL.createObjectURL(f)); }} />
+                {/* Multi-image upload */}
+                <div>
+                  <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Product Images (up to 8)</label>
+                  <input
+                    ref={productFileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={e => {
+                      const files = Array.from(e.target.files || []).slice(0, 8);
+                      setProductImageFiles(files);
+                      setProductImagePreviews(files.map(f => URL.createObjectURL(f)));
+                    }}
+                    className="block w-full text-xs text-[#5f7a60] file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[rgba(46,125,50,0.1)] file:text-[#2e7d32] hover:file:bg-[rgba(46,125,50,0.2)] cursor-pointer"
+                  />
+                  {productImagePreviews.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mt-2">
+                      {productImagePreviews.map((src, i) => (
+                        <div key={i} className="relative group">
+                          <img src={src} alt={`preview-${i}`} className="w-16 h-16 object-cover rounded-lg border border-[rgba(46,125,50,0.2)]" />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProductImageFiles(f => f.filter((_, fi) => fi !== i));
+                              setProductImagePreviews(p => p.filter((_, pi) => pi !== i));
+                            }}
+                            className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          >
+                            ×
+                          </button>
+                          {i === 0 && <span className="absolute bottom-0 left-0 right-0 text-[8px] font-bold text-center bg-[#2e7d32] text-white rounded-b-lg">Primary</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div>
                   <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Name *</label>
                   <input required value={productForm.name} onChange={e => setProductForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Bamboo Toothbrush" className="input-glass" />
@@ -783,7 +825,7 @@ export default function AdminDashboard() {
                     <input type="number" min="0" max="100" step="0.01" value={productForm.redeem_discount_percent} onChange={e => setProductForm(f => ({ ...f, redeem_discount_percent: e.target.value }))} placeholder="e.g. 50" className="input-glass" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">G Coins Required / unit</label>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Z Coins Required / unit</label>
                     <input type="number" min="0" value={productForm.redeem_coins_required} onChange={e => setProductForm(f => ({ ...f, redeem_coins_required: e.target.value }))} placeholder="e.g. 10" className="input-glass" />
                   </div>
                 </div>
@@ -798,7 +840,18 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {products.map((p: any) => (
                   <div key={p.id} className={`glass-card p-4 flex gap-4 items-start ${deletingProductId === p.id ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <img src={p.image_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=200&q=80'} alt={p.name} className="w-20 h-20 object-cover rounded-xl flex-shrink-0" />
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={(p.image_urls?.[0] || p.image_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=200&q=80')}
+                        alt={p.name}
+                        className="w-20 h-20 object-cover rounded-xl"
+                      />
+                      {(p.image_urls?.length > 1) && (
+                        <span className="absolute top-1 left-1 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                          {p.image_urls.length} imgs
+                        </span>
+                      )}
+                    </div>
                     <div className="flex-grow min-w-0">
                       <h3 className="font-bold text-[#1a3d1f] truncate">{p.name}</h3>
                       {editingProductId === p.id ? (
@@ -827,7 +880,7 @@ export default function AdminDashboard() {
                               min="0"
                               value={editProductCoins}
                               onChange={e => setEditProductCoins(e.target.value)}
-                              placeholder="G Coins / unit"
+                              placeholder="Z Coins / unit"
                               className="input-glass text-xs"
                             />
                           </div>
@@ -991,6 +1044,9 @@ export default function AdminDashboard() {
                           <div className="flex flex-wrap gap-3 mt-1 text-xs text-[#5f7a60]">
                             <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{reg.email}</span>
                             {reg.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{reg.phone}</span>}
+                            {reg.age && <span className="flex items-center gap-1"><span className="font-bold">Age:</span> {reg.age}</span>}
+                            {reg.gender && <span className="flex items-center gap-1"><span className="font-bold">Gender:</span> {reg.gender}</span>}
+                            {reg.profession && <span className="flex items-center gap-1"><span className="font-bold">Prof:</span> {reg.profession}</span>}
                           </div>
                         </div>
                         <span className="text-xs text-[#5f7a60] flex-shrink-0">{new Date(reg.created_at).toLocaleDateString()}</span>
@@ -1082,7 +1138,7 @@ export default function AdminDashboard() {
                       className="input-glass" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">G Coins Cost *</label>
+                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Z Coins Cost *</label>
                     <input required type="number" min="1" value={voucherForm.points_cost} onChange={e => setVoucherForm(f => ({ ...f, points_cost: e.target.value }))} placeholder="50" className="input-glass" />
                   </div>
                 </div>

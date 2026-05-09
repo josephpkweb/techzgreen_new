@@ -3,7 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Leaf, LogIn, Mail, Lock } from 'lucide-react';
+import { ZLeaf } from '../components/ZLeaf';
+import { LogIn, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Login() {
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
-      navigate('/dashboard');
+      navigate('/profile');
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign in.');
     } finally {
@@ -35,7 +36,7 @@ export default function Login() {
         {/* Brand mark */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-[#2e7d32] rounded-2xl mb-4 shadow-lg">
-            <Leaf className="w-7 h-7 text-white" />
+            <ZLeaf className="w-8 h-8" color="white" />
           </div>
           <h1 className="text-3xl font-black text-[#1a3d1f]">Welcome Back</h1>
           <p className="text-[#5f7a60] mt-1 text-sm">Sign in to continue earning rewards</p>

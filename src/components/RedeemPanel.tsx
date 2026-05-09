@@ -23,7 +23,7 @@ export default function RedeemPanel() {
           <p className="text-xs text-[#5f7a60]">
             Balance: <strong>{totalPoints}</strong> · Remaining: <strong>{remaining}</strong>
           </p>
-          <p className="text-[10px] text-[#5f7a60]">Toggle G Coin redemption per item above.</p>
+          <p className="text-[10px] text-[#5f7a60]">Toggle Z Coin redemption per item above.</p>
         </div>
         {totalCoinsUsed > 0 && (
           <span className="font-black text-green-700 text-sm flex items-center gap-1 whitespace-nowrap">

@@ -79,7 +79,7 @@ export default function Footer() {
                 { label: 'Shop', to: '/shop' },
                 { label: 'Events', to: '/events' },
                 { label: 'Earn Points', to: '/rewards' },
-                { label: 'Dashboard', to: '/dashboard' },
+                { label: 'Profile', to: '/profile' },
                 { label: 'Partner Portal', to: '/partner/login' },
               ].map(({ label, to }) => (
                 <li key={label}>

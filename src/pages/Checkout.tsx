@@ -146,7 +146,7 @@ export default function Checkout() {
         await supabase.from('points_ledger').insert({
           user_id: user.id,
           points_change: -coinsToDeduct,
-          description: `Redeemed ${coinsToDeduct} G Coins on Order #${orderId.substring(0, 8).toUpperCase()}`,
+          description: `Redeemed ${coinsToDeduct} Z Coins on Order #${orderId.substring(0, 8).toUpperCase()}`,
         });
       }
       await Promise.all(snapshotItems.map(async item => {
@@ -444,7 +444,7 @@ export default function Checkout() {
                             </span>
                           )}
                           {toggled && r && r.unitsRedeemed === 0 && (
-                            <span className="text-[11px] text-amber-700">Not enough G Coins</span>
+                            <span className="text-[11px] text-amber-700">Not enough Z Coins</span>
                           )}
                         </div>
                       )}
@@ -465,7 +465,7 @@ export default function Checkout() {
             <div className="glass-panel p-6">
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-green-700 mb-2">
-                  <span className="flex items-center gap-1"><GCoinIcon size={20} /> G Coins Discount</span>
+                  <span className="flex items-center gap-1"><GCoinIcon size={20} /> Z Coins Discount</span>
                   <span className="font-bold">−₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}

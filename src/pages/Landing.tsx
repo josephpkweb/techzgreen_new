@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { Recycle, Calendar, ShoppingBag, ArrowRight, Star, Leaf, Upload, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ZLeaf } from '../components/ZLeaf';
 import BannerCarousel from '../components/BannerCarousel';
 
 export default function Landing() {
@@ -17,7 +18,7 @@ export default function Landing() {
 
   const howItWorksSteps = [
     { icon: <Upload className="w-6 h-6 text-[#2e7d32]" />, step: '01', title: 'Dispose Responsibly', desc: 'Drop plastic into recycling bins.' },
-    { icon: <Leaf className="w-6 h-6 text-[#2e7d32]" />, step: '02', title: 'Snap & Upload', desc: 'Photo-proof your deposit on the app.' },
+    { icon: <ZLeaf className="w-6 h-6" color="green" />, step: '02', title: 'Snap & Upload', desc: 'Photo-proof your deposit on the app.' },
     { icon: <Star className="w-6 h-6 text-[#ffb300]" />, step: '03', title: 'Earn Points', desc: 'Admin verifies and rewards you.' },
   ];
 
@@ -30,7 +31,7 @@ export default function Landing() {
   const stats = [
     { val: '1,200+', label: 'Members', icon: '🌿' },
     { val: '4.5T', label: 'Waste Collected', icon: '♻️' },
-    { val: '8,000+', label: 'G Coins Awarded', icon: '🪙' },
+    { val: '8,000+', label: 'Z Coins Awarded', icon: '🪙' },
   ];
 
   return (
@@ -71,7 +72,7 @@ export default function Landing() {
             <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-10 lg:px-16">
               <div className="max-w-lg">
                 <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
-                  <Leaf className="w-3 h-3" /> Eco Rewards Platform
+                  <ZLeaf className="w-3 h-3" color="green" /> Eco Rewards Platform
                 </span>
                 <h1 className="text-white font-black leading-tight mb-2 sm:mb-3" style={{ fontSize: 'clamp(1.5rem, 5.5vw, 3.2rem)', fontFamily: 'Outfit,sans-serif' }}>
                   Turn Waste Into<br />
@@ -169,9 +170,9 @@ export default function Landing() {
             <>
               {/* Mobile: horizontal snap */}
               <div className="sm:hidden">
-                <div className="snap-x-scroll -mx-4 px-4">
+                <div className="snap-x-scroll -mx-4 px-4 flex gap-4">
                   {events.map((event: any) => (
-                    <div key={event.id} className="glass-card overflow-hidden w-[240px] tap-card flex-shrink-0">
+                    <Link to="/events" key={event.id} className="glass-card overflow-hidden w-[240px] tap-card flex-shrink-0 block">
                       <div className="relative h-32">
                         <img src={event.poster_url || 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=400'} alt={event.title} loading="lazy" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -185,14 +186,14 @@ export default function Landing() {
                         <h3 className="font-bold text-[#1a3d1f] text-sm line-clamp-1">{event.title}</h3>
                         {event.location && <p className="text-[10px] text-[#5f7a60] mt-0.5">{event.location}</p>}
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
               {/* Desktop: grid */}
               <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {events.map((event: any) => (
-                  <div key={event.id} className="glass-card overflow-hidden tap-card">
+                  <Link to="/events" key={event.id} className="glass-card overflow-hidden tap-card block">
                     <div className="relative h-44">
                       <img src={event.poster_url || 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=400'} alt={event.title} loading="lazy" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -206,7 +207,7 @@ export default function Landing() {
                       <h3 className="font-bold text-[#1a3d1f] text-sm line-clamp-1">{event.title}</h3>
                       {event.location && <p className="text-xs text-[#5f7a60] mt-1">{event.location}</p>}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </>
@@ -231,12 +232,12 @@ export default function Landing() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5">
               {products.map(product => (
-                <div key={product.id} className="glass-card overflow-hidden tap-card">
+                <Link to="/shop" key={product.id} className="glass-card overflow-hidden tap-card block group">
                   <img
                     src={product.image_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=300&q=80'}
                     alt={product.name}
                     loading="lazy"
-                    className="w-full object-cover h-[130px] sm:h-[160px] lg:h-[180px]"
+                    className="w-full object-cover h-[130px] sm:h-[160px] lg:h-[180px] group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="p-3 sm:p-4">
                     <h3 className="font-bold text-[#1a3d1f] text-sm line-clamp-1">{product.name}</h3>
@@ -245,12 +246,12 @@ export default function Landing() {
                       <span className="font-black text-[#2e7d32] text-base" style={{ fontFamily: 'Outfit,sans-serif' }}>
                         ₹{Number(product.price).toFixed(0)}
                       </span>
-                      <Link to="/shop" className="bg-[#2e7d32] text-white text-[11px] font-black px-3 py-1.5 rounded-lg hover:bg-[#1b5e20] transition-colors">
+                      <span className="bg-[#2e7d32] text-white text-[11px] font-black px-3 py-1.5 rounded-lg group-hover:bg-[#1b5e20] transition-colors">
                         Shop
-                      </Link>
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -296,7 +297,7 @@ export default function Landing() {
           <div className="glass-panel-dark p-7 sm:p-12 text-center relative overflow-hidden rounded-2xl">
             <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]" />
             <div className="relative z-10">
-              <Leaf className="w-9 h-9 sm:w-12 sm:h-12 text-[#ffb300] mx-auto mb-3" />
+              <ZLeaf className="w-9 h-9 sm:w-12 sm:h-12 mx-auto mb-3" color="black" />
               <h2 className="text-xl sm:text-3xl font-black text-white mb-2 sm:mb-3" style={{ fontFamily: 'Outfit,sans-serif' }}>
                 Ready to Make a Difference?
               </h2>

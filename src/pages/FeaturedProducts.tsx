@@ -30,7 +30,8 @@ import productsBanner from '../assets/products.png';
 import zMomento1 from '../assets/Z momento/images (12).jpeg';
 import zMomento2 from '../assets/Z momento/images (13).jpeg';
 import { Helmet } from 'react-helmet-async';
-import { Package, Leaf, X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { Package, ChevronLeft, ChevronRight, Play, X, Star, Link as LinkIcon, Info } from 'lucide-react';
+import { ZLeaf } from '../components/ZLeaf';
 
 interface Product {
   id: string;
@@ -270,7 +271,7 @@ export default function FeaturedProducts() {
       <section className="py-16 px-4 bg-[rgba(46,125,50,0.03)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <span className="section-label inline-flex mb-4"><Leaf className="w-3.5 h-3.5" />Why It Matters</span>
+            <span className="section-label inline-flex mb-4"><ZLeaf className="w-3.5 h-3.5" color="green" />Why It Matters</span>
             <h2 className="text-3xl font-black text-[#1a3d1f] mt-4">Every Product = Plastic Diverted from Landfills</h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-6">

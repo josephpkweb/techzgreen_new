@@ -45,7 +45,7 @@ export default function Navbar() {
       </span>
     ), label: 'Shop' },
     { to: '/events', icon: <Calendar className="w-5 h-5" />, label: 'Events' },
-    { to: '/rewards', icon: <GCoinIcon size={32} />, label: 'G Coins' },
+    { to: '/rewards', icon: <GCoinIcon size={32} />, label: 'Z Coins' },
     { to: '/profile', icon: <User className="w-5 h-5" />, label: 'Profile' },
   ];
 
@@ -113,9 +113,9 @@ export default function Navbar() {
                   <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />Profile</span>
                 </Link>
               )}
-              {user && (
-                <Link to={profileRole === 'admin' ? '/admin' : '/dashboard'} className={linkClass(profileRole === 'admin' ? '/admin' : '/dashboard')}>
-                  <span className="flex items-center gap-1.5"><LayoutDashboard className="w-3.5 h-3.5" />Dashboard</span>
+              {user && profileRole === 'admin' && (
+                <Link to="/admin" className={linkClass('/admin')}>
+                  <span className="flex items-center gap-1.5"><LayoutDashboard className="w-3.5 h-3.5" />Admin Dashboard</span>
                 </Link>
               )}
             </div>

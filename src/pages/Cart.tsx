@@ -72,7 +72,7 @@ export default function Cart() {
                 </p>
                 {(product.redeem_discount_percent ?? 0) > 0 && (product.redeem_coins_required ?? 0) > 0 && (
                   <p className="text-[11px] text-amber-700 mt-0.5">
-                    {product.redeem_discount_percent}% off for {product.redeem_coins_required} G Coins / unit
+                    {product.redeem_discount_percent}% off for {product.redeem_coins_required} Z Coins / unit
                   </p>
                 )}
                 <div className="flex items-center gap-2 mt-2">
@@ -117,7 +117,7 @@ export default function Cart() {
                   </p>
                 )}
                 {eligible && toggled && r && r.unitsRedeemed === 0 && (
-                  <p className="text-[11px] text-amber-700 mt-1">Not enough G Coins.</p>
+                  <p className="text-[11px] text-amber-700 mt-1">Not enough Z Coins.</p>
                 )}
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function Cart() {
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between items-center text-sm text-green-700">
-                  <span>G Coins Discount</span>
+                  <span>Z Coins Discount</span>
                   <span className="font-bold">−₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}

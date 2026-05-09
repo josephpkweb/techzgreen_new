@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { ZLeaf } from '../components/ZLeaf';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Leaf, UserPlus, Mail, Lock } from 'lucide-react';
+import { UserPlus, Mail, Lock } from 'lucide-react';
 
 export default function Signup() {
   const { signInWithGoogle } = useAuth();
@@ -34,7 +35,7 @@ export default function Signup() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-[#2e7d32] rounded-2xl mb-4 shadow-lg">
-            <Leaf className="w-7 h-7 text-white" />
+            <ZLeaf className="w-8 h-8" color="white" />
           </div>
           <h1 className="text-3xl font-black text-[#1a3d1f]">Join TechzGreen</h1>
           <p className="text-[#5f7a60] mt-1 text-sm">Start your eco-rewards journey today</p>

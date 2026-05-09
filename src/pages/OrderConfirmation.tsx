@@ -238,7 +238,7 @@ export default function OrderConfirmation() {
             <Link to="/shop" className="flex-1 bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20">
               Continue Shopping <ChevronRight className="w-5 h-5"/>
             </Link>
-            <Link to="/dashboard" className="flex-1 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#2e7d32] hover:text-[#2e7d32] font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2">
+            <Link to="/profile" className="flex-1 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#2e7d32] hover:text-[#2e7d32] font-bold py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-2">
               <Home className="w-5 h-5"/> Go to Dashboard
             </Link>
           </div>

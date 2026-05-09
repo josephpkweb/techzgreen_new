@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { ZLeaf } from '../components/ZLeaf';
 import { Recycle, Star, Leaf, Users, ArrowRight, CheckCircle, Globe, Award, Heart, Package } from 'lucide-react';
 import josephImg from '../assets/joseph.png';
 import akhilImg from '../assets/Akhil James K.png';
@@ -28,7 +29,7 @@ export default function About() {
 
             {/* Copy */}
             <div className="space-y-6">
-              <span className="section-label"><Leaf className="w-3.5 h-3.5" />Our Story</span>
+              <span className="section-label"><ZLeaf className="w-3.5 h-3.5" color="green" />Our Story</span>
               <h1 className="text-4xl lg:text-5xl font-black text-[#1a3d1f] leading-tight">
                 TechzGreen's Visionary Journey To A{' '}
                 <span
@@ -174,7 +175,7 @@ export default function About() {
                 desc: 'Closing the loop — from MLP collection to durable product manufacture, ensuring plastic waste is never an endpoint but always a starting point.',
               },
               {
-                icon: <Leaf className="w-8 h-8 text-[#2e7d32]" />,
+                icon: <ZLeaf className="w-8 h-8" color="green" />,
                 title: 'Sustainable Transformation',
                 desc: 'Converting non-valuable plastic waste into high-quality, long-lasting materials that are waterproof, pest-proof, fungus-resistant, and high-density.',
               },

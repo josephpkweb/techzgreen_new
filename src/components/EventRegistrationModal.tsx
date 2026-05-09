@@ -124,28 +124,28 @@ export default function EventRegistrationModal({ event, onClose, onSuccess }: Pr
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Phone Number</label>
+              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Phone Number *</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f7a60]" />
-                <input value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))}
+                <input required value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))}
                   placeholder="+91 98765 43210" className="input-glass" style={{ paddingLeft: '2.5rem' }} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Age</label>
+                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Age *</label>
                 <div className="relative">
                   <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f7a60]" />
-                  <input type="number" min="1" max="120" value={form.age} onChange={e => setForm(f => ({...f, age: e.target.value}))}
+                  <input required type="number" min="1" max="120" value={form.age} onChange={e => setForm(f => ({...f, age: e.target.value}))}
                     placeholder="25" className="input-glass" style={{ paddingLeft: '2.5rem' }} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Gender</label>
+                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Gender *</label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f7a60] pointer-events-none z-10" />
-                  <select value={form.gender} onChange={e => setForm(f => ({...f, gender: e.target.value}))}
+                  <select required value={form.gender} onChange={e => setForm(f => ({...f, gender: e.target.value}))}
                     className="input-glass appearance-none" style={{ paddingLeft: '2.5rem' }}>
                     <option value="">Select…</option>
                     <option value="male">Male</option>
@@ -158,10 +158,10 @@ export default function EventRegistrationModal({ event, onClose, onSuccess }: Pr
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Profession</label>
+              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Profession *</label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f7a60]" />
-                <input value={form.profession} onChange={e => setForm(f => ({...f, profession: e.target.value}))}
+                <input required value={form.profession} onChange={e => setForm(f => ({...f, profession: e.target.value}))}
                   placeholder="e.g. Student, Engineer, Teacher" className="input-glass" style={{ paddingLeft: '2.5rem' }} />
               </div>
             </div>

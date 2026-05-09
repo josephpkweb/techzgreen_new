@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { UploadCloud, CheckCircle2, Leaf, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
+import { ZLeaf } from '../components/ZLeaf';
 import QRCode from 'react-qr-code';
 import Barcode from 'react-barcode';
 import type { Submission } from '../types';
@@ -200,10 +201,10 @@ export default function Rewards() {
   return (
     <div className="fade-in bottom-nav-safe">
       <Helmet>
-        <title>Earn G Coins by Uploading Waste Photos | TechzGreen</title>
+        <title>Earn Z Coins by Uploading Waste Photos | TechzGreen</title>
         <meta name="description" content="Submit plastic waste photos and earn green reward points. Redeem points for eco-friendly products or partner vouchers on TechzGreen." />
         <link rel="canonical" href="https://techzgreen.in/rewards" />
-        <meta property="og:title" content="Earn G Coins by Uploading Waste Photos | TechzGreen" />
+        <meta property="og:title" content="Earn Z Coins by Uploading Waste Photos | TechzGreen" />
         <meta property="og:description" content="Submit plastic waste photos and earn green reward points. Redeem points for eco-friendly products or partner vouchers." />
         <meta property="og:url" content="https://techzgreen.in/rewards" />
         <meta property="og:type" content="website" />
@@ -220,7 +221,7 @@ export default function Rewards() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <GCoinIcon size={32} />
-                <h1 className="text-xl sm:text-2xl font-black text-white" style={{ fontFamily: 'Outfit,sans-serif' }}>G Coins</h1>
+                <h1 className="text-xl sm:text-2xl font-black text-white" style={{ fontFamily: 'Outfit,sans-serif' }}>Z Coins</h1>
               </div>
               <p className="text-[rgba(200,230,201,0.8)] text-xs sm:text-sm leading-relaxed max-w-sm">
                 Submit waste photos to earn · redeem for vouchers & discounts!
@@ -302,7 +303,7 @@ export default function Rewards() {
                 <div className="space-y-3 max-h-[360px] sm:max-h-[480px] overflow-y-auto pr-1">
                   {submissions.length === 0 && (
                     <div className="glass-panel p-8 text-center">
-                      <Leaf className="w-10 h-10 text-[rgba(46,125,50,0.25)] mx-auto mb-2" />
+                      <ZLeaf className="w-10 h-10 mx-auto mb-2 opacity-50" color="green" />
                       <p className="text-[#5f7a60] font-medium">No submissions yet. Start earning!</p>
                     </div>
                   )}
@@ -372,13 +373,13 @@ export default function Rewards() {
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-[rgba(46,125,50,0.1)] flex items-center justify-between relative z-10">
-                      <span className="font-bold text-[#ffb300] flex items-center gap-1"><GCoinIcon size={22} /> {v.points_cost} G Coins</span>
+                      <span className="font-bold text-[#ffb300] flex items-center gap-1"><GCoinIcon size={22} /> {v.points_cost} Z Coins</span>
                       <button
                         onClick={() => buyVoucher(v)}
                         disabled={buying || totalPoints < v.points_cost || !canBuyMore || isExpired}
                         className={`text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed cursor-pointer ${isExpired ? 'bg-gray-500' : 'bg-[#2e7d32] hover:bg-[#1b5e20] disabled:opacity-50'}`}
                       >
-                        {isExpired ? 'Expired' : !canBuyMore ? 'Limit Reached' : totalPoints >= v.points_cost ? 'Activate Voucher' : 'Not enough G Coins'}
+                        {isExpired ? 'Expired' : !canBuyMore ? 'Limit Reached' : totalPoints >= v.points_cost ? 'Activate Voucher' : 'Not enough Z Coins'}
                       </button>
                     </div>
                   </div>

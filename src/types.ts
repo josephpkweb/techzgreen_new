@@ -11,7 +11,8 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  image_url: string;  // matches Supabase column name
+  image_url: string;  // matches Supabase column name (first image, backward compat)
+  image_urls?: string[]; // multiple images
   stock: number;
   redeem_discount_percent: number | null;
   redeem_coins_required: number | null;

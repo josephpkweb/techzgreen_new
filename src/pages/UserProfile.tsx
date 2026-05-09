@@ -9,6 +9,7 @@ import {
   Camera, ShoppingBag, Calendar, ChevronRight, Pencil, X, Check
 } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
+import { ZLeaf } from '../components/ZLeaf';
 
 // ─── Address Form ───────────────────────────────────────────────────────────
 function AddressForm({ onSave, onCancel, saving }: {
@@ -182,8 +183,7 @@ export default function UserProfile() {
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4caf50] to-[#2e7d32] flex items-center justify-center text-white font-black text-2xl shadow-lg" style={{ fontFamily: 'Outfit,sans-serif' }}>
               {initials}
             </div>
-            <div className="absolute -bottom-1 -right-1 bg-[#ffb300] w-6 h-6 rounded-lg flex items-center justify-center shadow">
-              <Leaf className="w-3.5 h-3.5 text-white" />
+              <ZLeaf className="w-4 h-4" color="black" />
             </div>
           </div>
 
@@ -221,7 +221,7 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {/* G Coins */}
+          {/* Z Coins */}
           <div className="stat-box-dark px-5 py-3 flex items-center gap-3 flex-shrink-0">
             <GCoinIcon size={42} />
             <p className="stat-num text-3xl">{totalPoints}</p>
@@ -231,7 +231,7 @@ export default function UserProfile() {
 
       {/* ── Stats Row ── */}
       <div className="flex flex-wrap gap-3 mb-8 justify-center sm:justify-start">
-        <StatPill icon={<GCoinIcon size={28} />} label="G Coins" value={totalPoints} accent />
+        <StatPill icon={<GCoinIcon size={28} />} label="Z Coins" value={totalPoints} accent />
         <StatPill icon={<ShoppingBag className="w-4.5 h-4.5" />} label="Orders" value={stats.orders} />
         <StatPill icon={<Camera className="w-4.5 h-4.5" />} label="Submissions" value={submissions.length} />
         <StatPill icon={<Calendar className="w-4.5 h-4.5" />} label="Events" value={stats.events} />
@@ -245,7 +245,7 @@ export default function UserProfile() {
           {/* Points History */}
           <div className="glass-panel p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2"><Award className="w-5 h-5 text-[#ffb300]" />G Coin History</h2>
+              <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2"><Award className="w-5 h-5 text-[#ffb300]" />Z Coin History</h2>
               <Link to="/rewards" className="text-xs font-bold text-[#2e7d32] flex items-center gap-1 hover:underline">
                 Earn more <ChevronRight className="w-3 h-3" />
               </Link>
@@ -293,7 +293,7 @@ export default function UserProfile() {
                     </div>
                     <div className="flex-grow min-w-0">
                       <p className="text-sm font-bold text-[#1a3d1f] truncate">{uv.vouchers?.title}</p>
-                      <p className="text-xs text-[#5f7a60]">{uv.vouchers?.brand_name} · {uv.vouchers?.points_cost} G Coins</p>
+                      <p className="text-xs text-[#5f7a60]">{uv.vouchers?.brand_name} · {uv.vouchers?.points_cost} Z Coins</p>
                     </div>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${uv.is_used ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'}`}>
                       {uv.is_used ? 'Used' : 'Active'}
@@ -376,7 +376,7 @@ export default function UserProfile() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <StatusBadge status={sub.status} />
                         {sub.points_awarded > 0 && (
-                          <span className="inline-flex items-center gap-1 text-xs font-black text-green-700"><GCoinIcon size={18} />+{sub.points_awarded} G Coins</span>
+                          <span className="inline-flex items-center gap-1 text-xs font-black text-green-700"><GCoinIcon size={18} />+{sub.points_awarded} Z Coins</span>
                         )}
                       </div>
                       <p className="text-xs text-[#5f7a60] mt-0.5">{new Date(sub.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</p>
@@ -392,8 +392,8 @@ export default function UserProfile() {
             <p className="text-xs font-bold text-[#5f7a60] uppercase tracking-wide mb-3">Quick Links</p>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { to: '/dashboard', label: 'Dashboard', icon: <User className="w-4 h-4" /> },
-                { to: '/rewards', label: 'Earn G Coins', icon: <Camera className="w-4 h-4" /> },
+                { to: '/', label: 'Home', icon: <User className="w-4 h-4" /> },
+                { to: '/rewards', label: 'Earn Z Coins', icon: <Camera className="w-4 h-4" /> },
                 { to: '/shop', label: 'Shop', icon: <ShoppingBag className="w-4 h-4" /> },
                 { to: '/events', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
               ].map(({ to, label, icon }) => (

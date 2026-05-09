@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { ZLeaf } from '../components/ZLeaf';
 import { Calendar, MapPin, Users, ArrowRight, Leaf, CheckCircle2, ShoppingBag } from 'lucide-react';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import { useCart } from '../context/CartContext';
@@ -118,7 +119,7 @@ export default function Events() {
             <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]"></div>
             <div className="relative z-10">
               <span className="section-label !bg-white/15 !border-white/25 !text-white mb-4 inline-flex">
-                <Leaf className="w-3.5 h-3.5" />Community
+                <ZLeaf className="w-3.5 h-3.5" color="green" />Community
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mt-3 mb-3">Eco Events</h1>
               <p className="text-[rgba(200,230,201,0.85)] max-w-lg text-sm sm:text-base leading-relaxed">

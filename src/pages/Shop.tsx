@@ -4,15 +4,227 @@ import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { ZLeaf } from '../components/ZLeaf';
 import { GCoinIcon } from '../components/GCoin';
-import { ShoppingBag, Search, Check, Leaf } from 'lucide-react';
+import {
+  ShoppingBag, Search, Check, Leaf, X,
+  ChevronLeft, ChevronRight, ShoppingCart, Zap, Star
+} from 'lucide-react';
 import productsBanner from '../assets/products.png';
+import { useNavigate } from 'react-router-dom';
+
+// ─── Image carousel for modal ───
+function ImageCarousel({ images, name }: { images: string[]; name: string }) {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx(i => (i - 1 + images.length) % images.length);
+  const next = () => setIdx(i => (i + 1) % images.length);
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden bg-[rgba(46,125,50,0.04)]">
+      <div className="w-full h-64 sm:h-80">
+        <img
+          src={images[idx]}
+          alt={`${name} ${idx + 1}`}
+          className="w-full h-full object-contain transition-opacity duration-300"
+        />
+      </div>
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                className={`w-2 h-2 rounded-full transition-all cursor-pointer ${i === idx ? 'bg-[#2e7d32] w-4' : 'bg-black/30'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Thumbnail strip ───
+function ThumbStrip({ images, active, onSelect }: { images: string[]; active: number; onSelect: (i: number) => void }) {
+  if (images.length < 2) return null;
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1">
+      {images.map((img, i) => (
+        <button
+          key={i}
+          onClick={() => onSelect(i)}
+          className={`w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all cursor-pointer ${i === active ? 'border-[#2e7d32] scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+        >
+          <img src={img} alt="" className="w-full h-full object-cover" />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── Product Detail Modal ───
+function ProductModal({
+  product,
+  onClose,
+  addedIds,
+  onAdd,
+}: {
+  product: Product;
+  onClose: () => void;
+  addedIds: Set<string>;
+  onAdd: (p: Product) => void;
+}) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [imgIdx, setImgIdx] = useState(0);
+  const images = product.image_urls?.length ? product.image_urls : product.image_url ? [product.image_url] : ['https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80'];
+  const outOfStock = product.stock !== undefined && product.stock <= 0;
+  const added = addedIds.has(product.id);
+  const hasRedeem = (product.redeem_discount_percent ?? 0) > 0 && (product.redeem_coins_required ?? 0) > 0;
+
+  const handleBuyNow = () => {
+    onAdd(product);
+    onClose();
+    navigate('/cart');
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-full sm:max-w-2xl max-h-[95vh] sm:rounded-2xl rounded-t-3xl overflow-y-auto shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm flex justify-between items-center px-5 py-4 border-b border-[rgba(46,125,50,0.1)]">
+          <span className="text-xs font-bold text-[#2e7d32] bg-[rgba(46,125,50,0.1)] px-2.5 py-1 rounded-full border border-[rgba(46,125,50,0.2)] flex items-center gap-1">
+            <ZLeaf className="w-3 h-3" color="green" /> Eco Product
+          </span>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="px-5 py-5 space-y-5">
+          {/* Carousel */}
+          <div className="relative rounded-2xl overflow-hidden bg-[rgba(46,125,50,0.04)]">
+            <div className="w-full h-64 sm:h-80">
+              <img
+                src={images[imgIdx]}
+                alt={`${product.name} ${imgIdx + 1}`}
+                className="w-full h-full object-contain transition-opacity duration-300"
+              />
+            </div>
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() => setImgIdx(i => (i - 1 + images.length) % images.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setImgIdx(i => (i + 1) % images.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button key={i} onClick={() => setImgIdx(i)} className={`h-2 rounded-full transition-all cursor-pointer ${i === imgIdx ? 'bg-[#2e7d32] w-4' : 'bg-black/30 w-2'}`} />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Thumbnail strip */}
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setImgIdx(i)}
+                  className={`w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all cursor-pointer ${i === imgIdx ? 'border-[#2e7d32]' : 'border-transparent opacity-60 hover:opacity-90'}`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Info */}
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-2xl font-black text-[#1a3d1f]" style={{ fontFamily: 'Outfit, sans-serif' }}>{product.name}</h2>
+              <span className="text-2xl font-black text-[#2e7d32] shrink-0" style={{ fontFamily: 'Outfit, sans-serif' }}>₹{Number(product.price).toFixed(0)}</span>
+            </div>
+            <p className="text-[#5f7a60] text-sm leading-relaxed mt-2">{product.description}</p>
+          </div>
+
+          {/* Stock + Redeem badges */}
+          <div className="flex flex-wrap gap-2">
+            <span className={`text-xs font-bold px-3 py-1 rounded-full border ${outOfStock ? 'bg-red-50 text-red-600 border-red-200' : 'bg-green-50 text-green-700 border-green-200'}`}>
+              {outOfStock ? 'Out of Stock' : `${product.stock} in Stock`}
+            </span>
+            {hasRedeem && user && (
+              <span className="flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                <GCoinIcon size={14} /> {product.redeem_coins_required} G = {product.redeem_discount_percent}% off
+              </span>
+            )}
+          </div>
+
+          {/* CTA buttons */}
+          <div className="flex gap-3 pb-2">
+            <button
+              onClick={() => !outOfStock && onAdd(product)}
+              disabled={outOfStock}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm transition-all cursor-pointer disabled:opacity-40 ${
+                added
+                  ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                  : 'bg-[rgba(46,125,50,0.1)] text-[#2e7d32] border-2 border-[rgba(46,125,50,0.3)] hover:bg-[rgba(46,125,50,0.18)]'
+              }`}
+            >
+              {added ? <><Check className="w-4 h-4" /> Added!</> : <><ShoppingCart className="w-4 h-4" /> Add to Cart</>}
+            </button>
+            <button
+              onClick={() => !outOfStock && handleBuyNow()}
+              disabled={outOfStock}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm bg-[#ffb300] text-black hover:bg-[#ffa000] transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-sm"
+            >
+              <Zap className="w-4 h-4" /> Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
   const { totalPoints, user } = useAuth();
   const mountedRef = useRef(true);
@@ -66,7 +278,7 @@ export default function Shop() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-end justify-between gap-6">
             <div className="space-y-2">
-              <span className="section-label inline-flex"><Leaf className="w-3.5 h-3.5" />Sustainable Store</span>
+              <span className="section-label inline-flex"><ZLeaf className="w-3.5 h-3.5" color="green" />Sustainable Store</span>
               <h1 className="text-4xl lg:text-5xl font-black text-[#1a3d1f] mt-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 Eco Shop
               </h1>
@@ -141,20 +353,31 @@ export default function Shop() {
               {filtered.map(product => {
                 const outOfStock = product.stock !== undefined && product.stock <= 0;
                 const added = addedIds.has(product.id);
+                const images = product.image_urls?.length ? product.image_urls : product.image_url ? [product.image_url] : [];
+                const hasMultiple = images.length > 1;
                 return (
-                  <div key={product.id} className="glass-card overflow-hidden flex flex-col tap-card">
+                  <div
+                    key={product.id}
+                    className="glass-card overflow-hidden flex flex-col tap-card group cursor-pointer hover:shadow-xl transition-all duration-300"
+                    onClick={() => setSelectedProduct(product)}
+                  >
                     {/* Image */}
                     <div className="relative overflow-hidden h-[150px] sm:h-[180px] lg:h-[210px]">
                       <img
-                        src={product.image_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&q=80'}
+                        src={images[0] || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&q=80'}
                         alt={product.name}
                         loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       {outOfStock && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           <span className="text-white font-black text-xs bg-red-600 px-2.5 py-1 rounded-full">Out of Stock</span>
                         </div>
+                      )}
+                      {hasMultiple && (
+                        <span className="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                          <Star className="w-2.5 h-2.5" /> {images.length}
+                        </span>
                       )}
                     </div>
 
@@ -170,7 +393,7 @@ export default function Shop() {
                           ₹{Number(product.price).toFixed(0)}
                         </span>
                         <button
-                          onClick={() => !outOfStock && handleAdd(product)}
+                          onClick={e => { e.stopPropagation(); if (!outOfStock) handleAdd(product); }}
                           disabled={outOfStock}
                           className={`flex items-center gap-1 text-[11px] sm:text-xs font-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all active:scale-95 disabled:opacity-40 cursor-pointer ${
                             added
@@ -200,6 +423,16 @@ export default function Shop() {
           />
         </div>
       </div>
+
+      {/* ── Product Detail Modal ── */}
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          addedIds={addedIds}
+          onAdd={handleAdd}
+        />
+      )}
     </div>
   );
 }
