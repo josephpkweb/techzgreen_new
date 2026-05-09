@@ -26,6 +26,7 @@ import zPole6 from '../assets/Z pole/Substructure3_1823ec89-d183-48ef-ad8c-4439e
 import zPallet1 from '../assets/z pallet/1.jpeg';
 import zPallet2 from '../assets/z pallet/2.jpeg';
 import zPallet3 from '../assets/z pallet/3.png';
+import productsBanner from '../assets/products.png';
 import zMomento1 from '../assets/Z momento/images (12).jpeg';
 import zMomento2 from '../assets/Z momento/images (13).jpeg';
 import { Helmet } from 'react-helmet-async';
@@ -285,6 +286,17 @@ export default function FeaturedProducts() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Products Banner ── */}
+      <section className="px-4 py-10">
+        <div className="max-w-4xl mx-auto">
+          <img
+            src={productsBanner}
+            alt="TechzGreen products"
+            className="w-full h-auto rounded-2xl object-contain"
+          />
         </div>
       </section>
 
