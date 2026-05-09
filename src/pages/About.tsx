@@ -4,6 +4,7 @@ import { Recycle, Star, Leaf, Users, ArrowRight, CheckCircle, Globe, Award, Hear
 import josephImg from '../assets/joseph.png';
 import akhilImg from '../assets/Akhil James K.png';
 import jitheshImg from '../assets/Jithesh Francis.png';
+import aboutHero from '../assets/01.jpg.jpeg';
 
 export default function About() {
   return (
@@ -45,30 +46,12 @@ export default function About() {
               </Link>
             </div>
 
-            {/* 2×2 Image grid with stat badges */}
-            <div className="relative grid grid-cols-2 gap-3">
+            {/* Hero image with stat badges */}
+            <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=600"
-                alt="Community recycling"
-                className="rounded-2xl object-cover h-52 w-full"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600"
-                alt="Eco products"
-                loading="lazy"
-                className="rounded-2xl object-cover h-52 w-full mt-6"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&q=80&w=600"
-                alt="Waste sorting"
-                loading="lazy"
-                className="rounded-2xl object-cover h-52 w-full -mt-6"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&q=80&w=600"
-                alt="Green future"
-                loading="lazy"
-                className="rounded-2xl object-cover h-52 w-full"
+                src={aboutHero}
+                alt="TechzGreen recycled plastic products"
+                className="rounded-2xl object-cover w-full h-[440px]"
               />
               {/* Stat badge — top left */}
               <div className="absolute -left-4 top-16 glass-panel px-4 py-3 z-10 shadow-lg">

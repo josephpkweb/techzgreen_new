@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { GCoinIcon } from '../components/GCoin';
 import { ShoppingBag, Search, Check, Leaf } from 'lucide-react';
+import productsBanner from '../assets/products.png';
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -186,6 +187,17 @@ export default function Shop() {
               })}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ── Products Banner ── */}
+      <div className="px-4 py-10">
+        <div className="max-w-4xl mx-auto">
+          <img
+            src={productsBanner}
+            alt="TechzGreen products"
+            className="w-full h-auto rounded-2xl object-contain"
+          />
         </div>
       </div>
     </div>
