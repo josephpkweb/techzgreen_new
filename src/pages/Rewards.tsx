@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { UploadCloud, CheckCircle2, Leaf, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
+import { UploadCloud, CheckCircle2, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
 import { ZLeaf } from '../components/ZLeaf';
 import QRCode from 'react-qr-code';
@@ -63,6 +63,7 @@ function MyVoucherCard({ uv, scanCode, isUsed }: { uv: any; scanCode: string; is
               )}
             </div>
             <p className="text-center text-[9px] text-white/50 mt-1.5">Show this at the store to redeem</p>
+            <p className="text-center font-mono font-black text-white text-xs tracking-widest mt-1 bg-white/10 rounded-md py-1 px-2 letter-spacing-widest">{scanCode}</p>
           </>
         )}
         {isUsed && (
@@ -77,7 +78,7 @@ function MyVoucherCard({ uv, scanCode, isUsed }: { uv: any; scanCode: string; is
 
 export default function Rewards() {
   const { user, totalPoints, refreshPoints } = useAuth();
-  const [activeTab, setActiveTab] = useState<'earn' | 'redeem'>('earn');
+  const [activeTab, setActiveTab] = useState<'earn' | 'store' | 'vouchers'>('earn');
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -186,7 +187,9 @@ export default function Rewards() {
     try {
       const { error: ledgerError } = await supabase.from('points_ledger').insert({ user_id: user.id, points_change: -voucher.points_cost, description: `Purchased voucher: ${voucher.title}` });
       if (ledgerError) throw ledgerError;
-      const { error: voucherError } = await supabase.from('user_vouchers').insert({ user_id: user.id, voucher_id: voucher.id });
+      const genCode = () => Array.from({ length: 10 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('');
+      const qr_code = genCode();
+      const { error: voucherError } = await supabase.from('user_vouchers').insert({ user_id: user.id, voucher_id: voucher.id, qr_code });
       if (voucherError) throw voucherError;
       await fetchMyVouchers();
       await refreshPoints();
@@ -252,13 +255,19 @@ export default function Rewards() {
             onClick={() => setActiveTab('earn')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all cursor-pointer ${activeTab === 'earn' ? 'bg-[#2e7d32] text-white shadow-sm' : 'text-[#5f7a60] hover:text-[#2e7d32]'}`}
           >
-            <UploadCloud className="w-4 h-4" /> Earn
+            <UploadCloud className="w-4 h-4 hidden sm:block" /> Earn
           </button>
           <button
-            onClick={() => setActiveTab('redeem')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all cursor-pointer ${activeTab === 'redeem' ? 'bg-[#ffb300] text-black shadow-sm' : 'text-[#5f7a60] hover:text-[#2e7d32]'}`}
+            onClick={() => setActiveTab('store')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all cursor-pointer ${activeTab === 'store' ? 'bg-[#ffb300] text-black shadow-sm' : 'text-[#5f7a60] hover:text-[#2e7d32]'}`}
           >
-            <Gift className="w-4 h-4" /> Redeem
+            <Tag className="w-4 h-4 hidden sm:block" /> Store
+          </button>
+          <button
+            onClick={() => setActiveTab('vouchers')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-sm transition-all cursor-pointer ${activeTab === 'vouchers' ? 'bg-[#2e7d32] text-white shadow-sm' : 'text-[#5f7a60] hover:text-[#2e7d32]'}`}
+          >
+            <Gift className="w-4 h-4 hidden sm:block" /> My Vouchers
           </button>
         </div>
 
@@ -332,9 +341,9 @@ export default function Rewards() {
           </div>
         )}
 
-        {/* ── REDEEM TAB ── */}
-        {activeTab === 'redeem' && (
-          <div className="fade-in space-y-6 pb-4">
+        {/* ── STORE TAB ── */}
+        {activeTab === 'store' && (
+          <div className="fade-in pb-4">
             {/* Voucher Store */}
             <div>
               <h2 className="text-lg font-bold text-[#1a3d1f] mb-4 flex items-center gap-2"><Tag className="text-[#ffb300] w-5 h-5" />Voucher Store</h2>
@@ -348,7 +357,7 @@ export default function Rewards() {
                 const isExpired = v.end_date && new Date(v.end_date) < new Date();
                 
                 return (
-                  <div key={v.id} className={`glass-panel p-6 flex flex-col relative overflow-hidden group transition-colors ${isExpired ? 'opacity-75 grayscale-[0.5]' : 'hover:border-[#ffb300]'}`}>
+                  <div key={v.id} className={`glass-panel p-4 sm:p-6 flex flex-col relative overflow-hidden group transition-colors ${isExpired ? 'opacity-75 grayscale-[0.5]' : 'hover:border-[#ffb300]'}`}>
                     {/* Voucher image */}
                     {v.image_url && <img src={v.image_url} alt={v.title} className="w-full h-28 object-cover rounded-xl mb-4" />}
                     <div className="absolute -right-4 -top-4 w-20 h-20 bg-amber-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500" />
@@ -377,27 +386,32 @@ export default function Rewards() {
                       <button
                         onClick={() => buyVoucher(v)}
                         disabled={buying || totalPoints < v.points_cost || !canBuyMore || isExpired}
-                        className={`text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors disabled:cursor-not-allowed cursor-pointer ${isExpired ? 'bg-gray-500' : 'bg-[#2e7d32] hover:bg-[#1b5e20] disabled:opacity-50'}`}
+                        className={`text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors disabled:cursor-not-allowed cursor-pointer whitespace-nowrap ${isExpired ? 'bg-gray-500' : 'bg-[#2e7d32] hover:bg-[#1b5e20] disabled:opacity-50'}`}
                       >
-                        {isExpired ? 'Expired' : !canBuyMore ? 'Limit Reached' : totalPoints >= v.points_cost ? 'Activate Voucher' : 'Not enough Z Coins'}
+                        {isExpired ? 'Expired' : !canBuyMore ? 'Limit Reached' : totalPoints >= v.points_cost ? 'Activate' : 'Not Enough'}
                       </button>
                     </div>
                   </div>
                 );
               })}
-                {vouchers.length === 0 && (
-                  <div className="col-span-3 text-center py-10 text-gray-500">No vouchers available right now.</div>
-                )}
+              {vouchers.length === 0 && (
+                <div className="col-span-3 text-center py-10 text-gray-500">No vouchers available right now.</div>
+              )}
               </div>
             </div>
+          </div>
+        )}
 
+        {/* ── MY VOUCHERS TAB ── */}
+        {activeTab === 'vouchers' && (
+          <div className="fade-in pb-4">
             {/* My Vouchers */}
             <div>
               <h2 className="text-lg font-bold text-[#1a3d1f] mb-4 flex items-center gap-2"><Gift className="text-[#2e7d32] w-5 h-5" />My Vouchers</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {myVouchers.map(uv => {
-                  // Always use row id as scan code — partner lookup checks qr_code then id
-                  const scanCode = uv.id;
+                  // Use short qr_code if set, fallback to row id for legacy rows
+                  const scanCode = uv.qr_code || uv.id;
                   const isUsed = !!uv.used_at; // used_at is set on redemption
                   return (
                     <MyVoucherCard key={uv.id} uv={uv} scanCode={scanCode} isUsed={isUsed} />

@@ -30,7 +30,7 @@ import productsBanner from '../assets/products.png';
 import zMomento1 from '../assets/Z momento/images (12).jpeg';
 import zMomento2 from '../assets/Z momento/images (13).jpeg';
 import { Helmet } from 'react-helmet-async';
-import { Package, ChevronLeft, ChevronRight, Play, X, Star, Link as LinkIcon, Info } from 'lucide-react';
+import { Package, ChevronLeft, ChevronRight, CheckCircle, X } from 'lucide-react';
 import { ZLeaf } from '../components/ZLeaf';
 
 interface Product {
@@ -226,10 +226,10 @@ export default function FeaturedProducts() {
       </Helmet>
 
       {/* ── Header ── */}
-      <section className="py-16 px-4">
+      <section className="py-8 sm:py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <span className="section-label inline-flex mb-4"><Package className="w-3.5 h-3.5" />Our Products</span>
-          <h1 className="text-3xl lg:text-4xl font-black text-[#1a3d1f] mt-4">Signature Eco-Products</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1a3d1f] mt-4">Signature Eco-Products</h1>
           <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Seven flagship products. One mission — turn plastic waste into lasting value.</p>
         </div>
       </section>
@@ -244,7 +244,7 @@ export default function FeaturedProducts() {
                 onClick={() => setSelected(product)}
                 className="glass-card overflow-hidden text-left group cursor-pointer hover:shadow-lg transition-shadow"
               >
-                <div className="overflow-hidden h-56">
+                <div className="overflow-hidden h-44 sm:h-56">
                   <img
                     src={product.cardImage}
                     alt={product.name}
@@ -268,7 +268,7 @@ export default function FeaturedProducts() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="py-16 px-4 bg-[rgba(46,125,50,0.03)]">
+      <section className="py-8 sm:py-16 px-4 bg-[rgba(46,125,50,0.03)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <span className="section-label inline-flex mb-4"><ZLeaf className="w-3.5 h-3.5" color="green" />Why It Matters</span>
@@ -280,7 +280,7 @@ export default function FeaturedProducts() {
               { val: '32+', label: 'Years of expertise', sub: 'Pioneering plastic recycling since day one' },
               { val: '4.5T', label: 'Waste collected', sub: 'And growing with every community member' },
             ].map(({ val, label, sub }) => (
-              <div key={label} className="glass-card p-8 text-center">
+            <div key={label} className="glass-card p-5 sm:p-8 text-center">
                 <p className="text-4xl font-black text-[#2e7d32] mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>{val}</p>
                 <p className="font-bold text-[#1a3d1f] text-sm mb-1">{label}</p>
                 <p className="text-[#5f7a60] text-xs leading-relaxed">{sub}</p>

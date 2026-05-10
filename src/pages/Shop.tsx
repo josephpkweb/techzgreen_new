@@ -7,73 +7,11 @@ import { useAuth } from '../context/AuthContext';
 import { ZLeaf } from '../components/ZLeaf';
 import { GCoinIcon } from '../components/GCoin';
 import {
-  ShoppingBag, Search, Check, Leaf, X,
+  ShoppingBag, Search, Check, X,
   ChevronLeft, ChevronRight, ShoppingCart, Zap, Star
 } from 'lucide-react';
 import productsBanner from '../assets/products.png';
 import { useNavigate } from 'react-router-dom';
-
-// ─── Image carousel for modal ───
-function ImageCarousel({ images, name }: { images: string[]; name: string }) {
-  const [idx, setIdx] = useState(0);
-  const prev = () => setIdx(i => (i - 1 + images.length) % images.length);
-  const next = () => setIdx(i => (i + 1) % images.length);
-
-  return (
-    <div className="relative rounded-2xl overflow-hidden bg-[rgba(46,125,50,0.04)]">
-      <div className="w-full h-64 sm:h-80">
-        <img
-          src={images[idx]}
-          alt={`${name} ${idx + 1}`}
-          className="w-full h-full object-contain transition-opacity duration-300"
-        />
-      </div>
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                className={`w-2 h-2 rounded-full transition-all cursor-pointer ${i === idx ? 'bg-[#2e7d32] w-4' : 'bg-black/30'}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Thumbnail strip ───
-function ThumbStrip({ images, active, onSelect }: { images: string[]; active: number; onSelect: (i: number) => void }) {
-  if (images.length < 2) return null;
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1">
-      {images.map((img, i) => (
-        <button
-          key={i}
-          onClick={() => onSelect(i)}
-          className={`w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all cursor-pointer ${i === active ? 'border-[#2e7d32] scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
-        >
-          <img src={img} alt="" className="w-full h-full object-cover" />
-        </button>
-      ))}
-    </div>
-  );
-}
 
 // ─── Product Detail Modal ───
 function ProductModal({
@@ -306,7 +244,7 @@ export default function Shop() {
       </div>
 
       {/* ── Sticky Search Bar ── */}
-      <div className="sticky top-[72px] z-30 bg-[rgba(238,245,233,0.95)] backdrop-blur-sm px-4 pt-3 pb-3 border-b border-[rgba(46,125,50,0.08)]">
+      <div className="sticky top-[60px] sm:top-[72px] z-30 bg-[rgba(238,245,233,0.95)] backdrop-blur-sm px-4 pt-3 pb-3 border-b border-[rgba(46,125,50,0.08)]">
         <div className="max-w-7xl mx-auto">
           {/* Mobile: title + count inline */}
           <div className="flex items-center gap-3 mb-2 sm:hidden">

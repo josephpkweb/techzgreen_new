@@ -285,8 +285,8 @@ export default function Checkout() {
 
       {/* ── Step 1: Address ── */}
       {step === 1 && (
-        <div className="glass-panel p-8">
-          <h2 className="text-2xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2">
+        <div className="glass-panel p-4 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1a3d1f] mb-6 flex items-center gap-2">
             <MapPin className="text-[#2e7d32]" /> Shipping Address
           </h2>
 

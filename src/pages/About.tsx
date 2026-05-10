@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ZLeaf } from '../components/ZLeaf';
-import { Recycle, Star, Leaf, Users, ArrowRight, CheckCircle, Globe, Award, Heart, Package } from 'lucide-react';
+import { Recycle, Star, Users, ArrowRight, CheckCircle, Globe, Award, Heart, Package } from 'lucide-react';
 import josephImg from '../assets/joseph.png';
 import akhilImg from '../assets/Akhil James K.png';
 import jitheshImg from '../assets/Jithesh Francis.png';
@@ -23,14 +23,14 @@ export default function About() {
       </Helmet>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden pt-8 pb-20 px-4">
+      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-10 sm:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
             {/* Copy */}
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6">
               <span className="section-label"><ZLeaf className="w-3.5 h-3.5" color="green" />Our Story</span>
-              <h1 className="text-4xl lg:text-5xl font-black text-[#1a3d1f] leading-tight">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#1a3d1f] leading-tight mt-2">
                 TechzGreen's Visionary Journey To A{' '}
                 <span
                   className="text-transparent bg-clip-text"
@@ -39,30 +39,30 @@ export default function About() {
                   Greener Tomorrow
                 </span>
               </h1>
-              <p className="text-lg text-[#5f7a60] leading-relaxed max-w-md">
-                At Techzgreen, we transform plastic waste — especially Multi-Layer Plastic (MLP) — into durable, eco-friendly products through innovative recycling and upcycling technologies. Our mission is to help industries, institutions, and communities build sustainable waste management solutions while promoting a circular economy. We also provide sustainability consultation for corporates, conduct plastic waste collection campaigns, and organize environmental awareness programs to create a greener future.
+              <p className="text-sm sm:text-lg text-[#5f7a60] leading-relaxed max-w-md">
+                At Techzgreen, we transform plastic waste — especially Multi-Layer Plastic (MLP) — into durable, eco-friendly products through innovative recycling and upcycling technologies. Our mission is to help industries, institutions, and communities build sustainable waste management solutions while promoting a circular economy.
               </p>
               <Link to="/signup" className="btn-primary inline-flex items-center gap-2 w-fit">
                 Join Our Movement <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Hero image with stat badges */}
-            <div className="relative">
+            {/* Hero image with stat badges — badges kept inside image bounds on mobile */}
+            <div className="relative mt-4 lg:mt-0">
               <img
                 src={aboutHero}
                 alt="TechzGreen recycled plastic products"
-                className="rounded-2xl object-cover w-full h-[440px]"
+                className="rounded-2xl object-cover w-full h-[280px] sm:h-[380px] lg:h-[440px]"
               />
-              {/* Stat badge — top left */}
-              <div className="absolute -left-4 top-16 glass-panel px-4 py-3 z-10 shadow-lg">
-                <p className="font-black text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>32+</p>
-                <p className="text-xs text-[#5f7a60] font-semibold mt-0.5">Years Experience</p>
+              {/* Stat badge — top left (inside on mobile) */}
+              <div className="absolute left-3 sm:-left-4 top-4 sm:top-16 glass-panel px-3 sm:px-4 py-2 sm:py-3 z-10 shadow-lg">
+                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>32+</p>
+                <p className="text-[10px] sm:text-xs text-[#5f7a60] font-semibold mt-0.5">Years Experience</p>
               </div>
-              {/* Stat badge — bottom right */}
-              <div className="absolute -right-4 bottom-16 glass-panel px-4 py-3 z-10 shadow-lg">
-                <p className="font-black text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>1200+</p>
-                <p className="text-xs text-[#5f7a60] font-semibold mt-0.5">Community Members</p>
+              {/* Stat badge — bottom right (inside on mobile) */}
+              <div className="absolute right-3 sm:-right-4 bottom-4 sm:bottom-16 glass-panel px-3 sm:px-4 py-2 sm:py-3 z-10 shadow-lg">
+                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>1200+</p>
+                <p className="text-[10px] sm:text-xs text-[#5f7a60] font-semibold mt-0.5">Community Members</p>
               </div>
             </div>
           </div>
@@ -70,14 +70,14 @@ export default function About() {
       </section>
 
       {/* ── Who We Are ── */}
-      <section className="py-20 px-4 bg-[rgba(46,125,50,0.03)]">
+      <section className="py-10 sm:py-20 px-4 bg-[rgba(46,125,50,0.03)]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
             {/* Left: text + checklist */}
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6">
               <span className="section-label"><Users className="w-3.5 h-3.5" />Who We Are</span>
-              <h2 className="text-4xl font-black text-[#1a3d1f] mt-4">Sustainability Pioneers</h2>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#1a3d1f] mt-2 sm:mt-4">Sustainability Pioneers</h2>
               <p className="text-[#5f7a60] leading-relaxed">
                 We manufacture a wide range of eco-friendly products — school benches, tables, furniture, outdoor benches, TV units, roofing sheets, flooring panels, ceiling boards, partitions, and custom items like momentos. These products are waterproof, pest-proof, fungus-resistant, high-density, and long-lasting, making them suitable for both indoor and outdoor applications.
               </p>
@@ -122,16 +122,16 @@ export default function About() {
       </section>
 
       {/* ── Mission & Vision ── */}
-      <section className="py-20 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8 sm:mb-14">
             <span className="section-label mb-4 inline-flex"><Star className="w-3.5 h-3.5" />Purpose</span>
-            <h2 className="text-4xl font-black text-[#1a3d1f] mt-4">Mission & Vision</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#1a3d1f] mt-4">Mission & Vision</h2>
             <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Two forces driving everything we build and every community we serve.</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
             {/* Mission */}
-            <div className="glass-panel p-10 space-y-5">
+            <div className="glass-panel p-6 sm:p-10 space-y-5">
               <div className="bg-[rgba(46,125,50,0.1)] w-14 h-14 rounded-2xl flex items-center justify-center border border-[rgba(46,125,50,0.15)]">
                 <Recycle className="w-7 h-7 text-[#2e7d32]" />
               </div>
@@ -141,7 +141,7 @@ export default function About() {
               </p>
             </div>
             {/* Vision */}
-            <div className="glass-panel-dark p-10 space-y-5">
+            <div className="glass-panel-dark p-6 sm:p-10 space-y-5">
               <div className="bg-[rgba(255,179,0,0.15)] w-14 h-14 rounded-2xl flex items-center justify-center border border-[rgba(255,179,0,0.3)]">
                 <Star className="w-7 h-7 text-[#ffb300] fill-[#ffb300]" />
               </div>
@@ -155,7 +155,7 @@ export default function About() {
       </section>
 
       {/* ── Services ── */}
-      <section className="py-20 px-4 bg-[rgba(46,125,50,0.03)]">
+      <section className="py-10 sm:py-20 px-4 bg-[rgba(46,125,50,0.03)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <span className="section-label mb-4 inline-flex">What We Do</span>
@@ -198,14 +198,14 @@ export default function About() {
       </section>
 
       {/* ── Founders ── */}
-      <section className="py-20 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8 sm:mb-14">
             <span className="section-label mb-4 inline-flex"><Users className="w-3.5 h-3.5" />The Team</span>
-            <h2 className="text-4xl font-black text-[#1a3d1f] mt-4">Meet the Founders</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#1a3d1f] mt-4">Meet the Founders</h2>
             <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">The people behind TechzGreen's mission to turn plastic waste into a resource.</p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 name: 'Joseph P K',
@@ -257,9 +257,9 @@ export default function About() {
       </section>
 
       {/* ── Featured Products Teaser ── */}
-      <section className="py-20 px-4">
+      <section className="py-10 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="glass-panel-dark p-12 text-center relative overflow-hidden">
+          <div className="glass-panel-dark p-6 sm:p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]" />
             <div className="relative z-10 space-y-5">
               <span className="section-label mb-4 inline-flex"><Package className="w-3.5 h-3.5" />Flagship Products</span>
@@ -276,14 +276,14 @@ export default function About() {
       </section>
 
       {/* ── Milestone Banner ── */}
-      <section className="py-16 px-4 mt-8">
+      <section className="py-8 sm:py-16 px-4 mt-4 sm:mt-8">
         <div className="max-w-7xl mx-auto">
-          <div className="glass-panel-dark p-12 text-center relative overflow-hidden">
+          <div className="glass-panel-dark p-6 sm:p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]" />
-            <div className="relative z-10 space-y-6">
-              <div className="flex items-center justify-center gap-3">
-                <Award className="w-10 h-10 text-[#ffb300]" />
-                <h2 className="text-4xl font-black text-white">Celebrating an Eco-Revolution</h2>
+            <div className="relative z-10 space-y-4 sm:space-y-6">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                <Award className="w-7 h-7 sm:w-10 sm:h-10 text-[#ffb300]" />
+                <h2 className="text-xl sm:text-4xl font-black text-white">Celebrating an Eco-Revolution</h2>
               </div>
               <p className="text-[rgba(200,230,201,0.9)] max-w-2xl mx-auto leading-relaxed text-lg">
                 Over 1,200 community members, 4.5 tonnes of plastic diverted from landfills, and 8,000+ green points rewarded. This is only the beginning.

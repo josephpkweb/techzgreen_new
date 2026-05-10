@@ -59,57 +59,58 @@ export default function Cart() {
             const toggled = !!redeemToggleMap[product.id];
             const insufficient = eligible && toggled && r && r.unitsRedeemed < quantity;
             return (
-            <div key={product.id} className="glass-card p-3 sm:p-4 flex gap-3 sm:gap-4 items-center">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl flex-shrink-0 border border-[rgba(46,125,50,0.1)]"
-              />
-              <div className="flex-grow min-w-0">
-                <h3 className="font-bold text-[#1a3d1f] text-sm sm:text-base line-clamp-1">{product.name}</h3>
-                <p className="font-black text-[#2e7d32] text-base sm:text-lg mt-0.5" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                  ₹{Number(product.price).toFixed(0)}
-                </p>
-                {(product.redeem_discount_percent ?? 0) > 0 && (product.redeem_coins_required ?? 0) > 0 && (
-                  <p className="text-[11px] text-amber-700 mt-0.5">
-                    {product.redeem_discount_percent}% off for {product.redeem_coins_required} Z Coins / unit
+              <div key={product.id} className="glass-card p-3 sm:p-4 flex gap-3 sm:gap-4 items-start">
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  className="w-18 h-18 sm:w-24 sm:h-24 object-cover rounded-xl flex-shrink-0 border border-[rgba(46,125,50,0.1)]"
+                />
+                <div className="flex-grow min-w-0">
+                  <h3 className="font-bold text-[#1a3d1f] text-sm sm:text-base line-clamp-1">{product.name}</h3>
+                  <p className="font-black text-[#2e7d32] text-base sm:text-lg mt-0.5" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    ₹{Number(product.price).toFixed(0)}
                   </p>
-                )}
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="flex items-center border border-[rgba(46,125,50,0.2)] rounded-xl overflow-hidden bg-white/60">
-                    <button onClick={() => updateQuantity(product.id, quantity - 1)} className="px-3 py-1.5 text-[#2d4a30] hover:bg-[rgba(46,125,50,0.08)] transition-colors cursor-pointer">
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="px-3 py-1.5 font-black text-[#1a3d1f] min-w-[2rem] text-center text-sm" style={{ fontFamily: 'Outfit,sans-serif' }}>
-                      {quantity}
+                  {(product.redeem_discount_percent ?? 0) > 0 && (product.redeem_coins_required ?? 0) > 0 && (
+                    <p className="text-[11px] text-amber-700 mt-0.5">
+                      {product.redeem_discount_percent}% off for {product.redeem_coins_required} Z Coins / unit
+                    </p>
+                  )}
+                  {/* Row: qty + redeem toggle + price + delete — wraps on mobile */}
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <div className="flex items-center border border-[rgba(46,125,50,0.2)] rounded-xl overflow-hidden bg-white/60">
+                      <button onClick={() => updateQuantity(product.id, quantity - 1)} className="px-3 py-1.5 text-[#2d4a30] hover:bg-[rgba(46,125,50,0.08)] transition-colors cursor-pointer">
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="px-3 py-1.5 font-black text-[#1a3d1f] min-w-[2rem] text-center text-sm" style={{ fontFamily: 'Outfit,sans-serif' }}>
+                        {quantity}
+                      </span>
+                      <button onClick={() => updateQuantity(product.id, quantity + 1)} className="px-3 py-1.5 text-[#2d4a30] hover:bg-[rgba(46,125,50,0.08)] transition-colors cursor-pointer">
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    {eligible && (
+                      <label className="flex items-center gap-1.5 cursor-pointer" title={`Redeem ${product.redeem_coins_required} G/unit for ${product.redeem_discount_percent}% off`}>
+                        <span className="text-[11px] font-bold text-[#2d4a30] flex items-center gap-1">
+                          <GCoinIcon size={14} /> Redeem
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={toggled}
+                          onChange={(e) => setRedeemToggle(product.id, e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[#2e7d32] rounded-full relative transition-colors">
+                          <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${toggled ? 'translate-x-4' : ''}`} />
+                        </div>
+                      </label>
+                    )}
+                    <span className="ml-auto text-xs sm:text-sm font-bold text-[#5f7a60]">
+                      ₹{(Number(product.price) * quantity).toFixed(0)}
                     </span>
-                    <button onClick={() => updateQuantity(product.id, quantity + 1)} className="px-3 py-1.5 text-[#2d4a30] hover:bg-[rgba(46,125,50,0.08)] transition-colors cursor-pointer">
-                      <Plus className="w-3.5 h-3.5" />
+                    <button onClick={() => removeFromCart(product.id)} className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer" title="Remove">
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                  {eligible && (
-                    <label className="flex items-center gap-1.5 cursor-pointer" title={`Redeem ${product.redeem_coins_required} G/unit for ${product.redeem_discount_percent}% off`}>
-                      <span className="text-[11px] font-bold text-[#2d4a30] flex items-center gap-1">
-                        <GCoinIcon size={14} /> Redeem Coins
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={toggled}
-                        onChange={(e) => setRedeemToggle(product.id, e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[#2e7d32] rounded-full relative transition-colors">
-                        <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${toggled ? 'translate-x-4' : ''}`} />
-                      </div>
-                    </label>
-                  )}
-                  <span className="ml-auto text-xs sm:text-sm font-bold text-[#5f7a60]">
-                    ₹{(Number(product.price) * quantity).toFixed(0)}
-                  </span>
-                  <button onClick={() => removeFromCart(product.id)} className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer" title="Remove">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
                 {eligible && toggled && r && r.unitsRedeemed > 0 && (
                   <p className="text-[11px] text-green-700 font-bold mt-1">
                     Redeem {r.unitsRedeemed}/{quantity} unit{r.unitsRedeemed !== 1 ? 's' : ''} · −{r.coinsUsed} G · −₹{r.discountAmount.toFixed(2)}
@@ -127,7 +128,7 @@ export default function Cart() {
         </div>
 
         {/* Right: Order Summary — desktop sidebar, mobile hidden (uses sticky bar) */}
-        <div className="hidden lg:block w-80 flex-shrink-0 mt-0">
+        <div className="hidden sm:block sm:w-72 lg:w-80 flex-shrink-0 mt-4 sm:mt-0">
           <div className="glass-panel p-6 space-y-4 sticky top-24">
             <h2 className="font-black text-lg text-[#1a3d1f]" style={{ fontFamily: 'Outfit,sans-serif' }}>Order Summary</h2>
             <div className="space-y-2 text-sm">

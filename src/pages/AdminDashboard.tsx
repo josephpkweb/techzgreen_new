@@ -5,11 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import {
-  XCircle, Award, Leaf, CheckCircle2, Package, Plus, Trash2, UploadCloud,
-  Tag, Image, Calendar, MapPin, Users, Settings, ChevronRight, X, Phone, Mail,
+  XCircle, Award, CheckCircle2, Package, Plus, Trash2, UploadCloud,
+  Tag, Image, Calendar, MapPin, Users, ChevronRight, X, Phone, Mail,
   Megaphone, ToggleLeft, ToggleRight, ShoppingBag, Truck, Clock, CheckCheck,
   ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake, BarChart3, ClipboardList
 } from 'lucide-react';
+import { ZLeaf } from '../components/ZLeaf';
 
 // ── Order Card sub-component (needs own state hooks) ──
 function OrderCard({
@@ -699,9 +700,9 @@ export default function AdminDashboard() {
               <p className="text-[rgba(200,230,201,0.8)] text-sm mt-0.5">Manage everything from one place.</p>
             </div>
           </div>
-          <div className="sm:ml-auto flex gap-3 flex-wrap admin-stats-row">
+          <div className="sm:ml-auto flex gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-none snap-x-scroll sm:flex-wrap admin-stats-row">
             {[{ n: submissions.length, l: 'Pending' }, { n: products.length, l: 'Products' }, { n: events.length, l: 'Events' }].map(({ n, l }) => (
-              <div key={l} className="stat-box-dark px-5 py-3 text-center min-w-[80px]">
+              <div key={l} className="stat-box-dark px-5 py-3 text-center min-w-[100px] flex-shrink-0">
                 <p className="stat-num">{n}</p>
                 <p className="stat-label">{l}</p>
               </div>

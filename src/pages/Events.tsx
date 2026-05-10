@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { ZLeaf } from '../components/ZLeaf';
-import { Calendar, MapPin, Users, ArrowRight, Leaf, CheckCircle2, ShoppingBag } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowRight, CheckCircle2, ShoppingBag } from 'lucide-react';
 import EventRegistrationModal from '../components/EventRegistrationModal';
 import { useCart } from '../context/CartContext';
 

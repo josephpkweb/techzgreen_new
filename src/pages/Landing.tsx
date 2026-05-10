@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
-import { Recycle, Calendar, ShoppingBag, ArrowRight, Star, Leaf, Upload, ChevronRight } from 'lucide-react';
+import { Recycle, Calendar, ShoppingBag, ArrowRight, Star, Upload, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ZLeaf } from '../components/ZLeaf';
 import BannerCarousel from '../components/BannerCarousel';

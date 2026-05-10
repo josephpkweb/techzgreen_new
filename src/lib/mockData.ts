@@ -1,7 +1,7 @@
 // Mock Database for TechzGreen
 import type { User, Product, Submission, Event } from '../types';
 
-export let mockUsers: User[] = [
+export const mockUsers: User[] = [
   { id: '1', name: 'John Doe', email: 'user@test.com', role: 'user', points: 150 },
   { id: '2', name: 'Techz Admin', email: 'admin@techzgreen.com', role: 'admin', points: 0 },
 ];
@@ -26,7 +26,7 @@ export function addMockProduct(product: Product) {
   localStorage.setItem('techzProducts', JSON.stringify(products));
 }
 
-export let mockEvents: Event[] = [
+export const mockEvents: Event[] = [
   {
     id: '1',
     title: 'Community Beach Cleanup',
@@ -37,7 +37,7 @@ export let mockEvents: Event[] = [
   }
 ];
 
-export let mockSubmissions: Submission[] = [
+export const mockSubmissions: Submission[] = [
   { id: '1', userId: '1', imageUrl: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800', status: 'pending', submittedAt: '2026-04-01T10:00:00Z', notes: 'Recycled 5 plastic bottles today!' },
   { id: '2', userId: '1', imageUrl: 'https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&q=80&w=800', status: 'approved', submittedAt: '2026-03-25T15:30:00Z', notes: 'Cardboard disposal at local facility.' }
 ];

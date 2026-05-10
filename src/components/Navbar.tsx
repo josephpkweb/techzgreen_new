@@ -77,11 +77,7 @@ export default function Navbar() {
     );
   }
 
-  const adminTabs = [
-    { to: '/admin', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Admin' },
-  ];
-
-  const bottomTabs = profileRole === 'admin' ? adminTabs : userTabs;
+  const bottomTabs = userTabs;
 
   return (
     <>
@@ -111,11 +107,6 @@ export default function Navbar() {
               {user && profileRole === 'user' && (
                 <Link to="/profile" className={linkClass('/profile')}>
                   <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />Profile</span>
-                </Link>
-              )}
-              {user && profileRole === 'admin' && (
-                <Link to="/admin" className={linkClass('/admin')}>
-                  <span className="flex items-center gap-1.5"><LayoutDashboard className="w-3.5 h-3.5" />Admin Dashboard</span>
                 </Link>
               )}
             </div>

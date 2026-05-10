@@ -130,7 +130,6 @@ export default function PartnerDashboard() {
     try {
       // Search by qr_code first; fallback to id (covers old rows where qr_code is NULL)
       let data: any = null;
-      let error: any = null;
 
       const byQr = await supabase
         .from('user_vouchers')

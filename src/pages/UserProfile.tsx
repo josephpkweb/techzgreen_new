@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
-  User, Mail, Leaf, MapPin, Plus, Trash2, CheckCircle2,
+  User, Mail, MapPin, Plus, Trash2, CheckCircle2,
   XCircle, Clock, Award, Gift, TrendingUp, TrendingDown,
   Camera, ShoppingBag, Calendar, ChevronRight, Pencil, X, Check
 } from 'lucide-react';
@@ -183,8 +183,7 @@ export default function UserProfile() {
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4caf50] to-[#2e7d32] flex items-center justify-center text-white font-black text-2xl shadow-lg" style={{ fontFamily: 'Outfit,sans-serif' }}>
               {initials}
             </div>
-              <ZLeaf className="w-4 h-4" color="black" />
-            </div>
+            <ZLeaf className="w-4 h-4" color="black" />
           </div>
 
           {/* Name & Email */}
@@ -232,10 +231,10 @@ export default function UserProfile() {
       {/* ── Stats Row ── */}
       <div className="flex flex-wrap gap-3 mb-8 justify-center sm:justify-start">
         <StatPill icon={<GCoinIcon size={28} />} label="Z Coins" value={totalPoints} accent />
-        <StatPill icon={<ShoppingBag className="w-4.5 h-4.5" />} label="Orders" value={stats.orders} />
-        <StatPill icon={<Camera className="w-4.5 h-4.5" />} label="Submissions" value={submissions.length} />
-        <StatPill icon={<Calendar className="w-4.5 h-4.5" />} label="Events" value={stats.events} />
-        <StatPill icon={<Gift className="w-4.5 h-4.5" />} label="Vouchers" value={vouchers.length} />
+        <StatPill icon={<ShoppingBag className="w-4 h-4" />} label="Orders" value={stats.orders} />
+        <StatPill icon={<Camera className="w-4 h-4" />} label="Submissions" value={submissions.length} />
+        <StatPill icon={<Calendar className="w-4 h-4" />} label="Events" value={stats.events} />
+        <StatPill icon={<Gift className="w-4 h-4" />} label="Vouchers" value={vouchers.length} />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -289,7 +288,7 @@ export default function UserProfile() {
                 {vouchers.map((uv: any) => (
                   <div key={uv.id} className="flex items-center gap-3 bg-[rgba(255,179,0,0.05)] border border-[rgba(255,179,0,0.2)] rounded-xl px-4 py-3">
                     <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
-                      <Gift className="w-4.5 h-4.5 text-amber-600" />
+                      <Gift className="w-4 h-4 text-amber-600" />
                     </div>
                     <div className="flex-grow min-w-0">
                       <p className="text-sm font-bold text-[#1a3d1f] truncate">{uv.vouchers?.title}</p>
