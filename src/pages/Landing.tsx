@@ -61,7 +61,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto space-y-3">
 
           {/* Hero image banner */}
-          <div className="relative rounded-2xl overflow-hidden" style={{ minHeight: '260px', maxHeight: '520px', aspectRatio: '16/7' }}>
+          <div className="relative rounded-2xl overflow-hidden" style={{ height: 'clamp(220px, 52vw, 480px)' }}>
             <img
               src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1400"
               alt="Eco-friendly waste disposal"
@@ -74,9 +74,9 @@ export default function Landing() {
                 <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
                   <ZLeaf className="w-3 h-3" color="green" /> Eco Rewards Platform
                 </span>
-                <h1 className="text-white font-black leading-tight mb-2 sm:mb-3" style={{ fontSize: 'clamp(1.5rem, 5.5vw, 3.2rem)', fontFamily: 'Outfit,sans-serif' }}>
+                <h1 className="text-white font-black leading-tight mb-2 sm:mb-3" style={{ fontSize: 'clamp(1.4rem, 5.5vw, 3.2rem)', fontFamily: 'Outfit,sans-serif' }}>
                   Turn Waste Into<br />
-                  <span className="text-[#ffb300]">Green Rewards</span>
+                  <span className="text-[#ffb300]">Z Coins</span>
                 </h1>
                 <p className="text-white/80 text-xs sm:text-sm lg:text-base leading-relaxed mb-4 max-w-xs sm:max-w-sm">
                   Dispose plastic, snap a photo, earn points. Every bin counts.
