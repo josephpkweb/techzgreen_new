@@ -8,7 +8,8 @@ import {
   XCircle, Award, CheckCircle2, Package, Plus, Trash2, UploadCloud,
   Tag, Image, Calendar, MapPin, Users, ChevronRight, X, Phone, Mail,
   Megaphone, ToggleLeft, ToggleRight, ShoppingBag, Truck, Clock, CheckCheck,
-  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake, BarChart3, ClipboardList, Settings
+  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake,
+  BarChart3, ClipboardList, Settings, AlertTriangle
 } from 'lucide-react';
 import { ZLeaf } from '../components/ZLeaf';
 
@@ -284,6 +285,33 @@ export default function AdminDashboard() {
   const [settingsZcoins, setSettingsZcoins] = useState('');
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsMsg, setSettingsMsg] = useState('');
+
+  // ── Danger Zone: Flush ──
+  // flushConfirm: null | { table, label, step: 1|2 }
+  const [flushConfirm, setFlushConfirm] = useState<{ table: string; label: string; step: 1 | 2 } | null>(null);
+  const [flushing, setFlushing] = useState(false);
+  const [flushMsg, setFlushMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  const FLUSH_TARGETS = [
+    { table: 'orders',        label: 'Order History',     desc: 'Deletes ALL orders, order items, and associated tracking data.' },
+    { table: 'products',      label: 'Product Catalogue', desc: 'Deletes ALL products and their images from the catalogue.' },
+    { table: 'order_items',   label: 'Order Items Only',  desc: 'Deletes all line items inside orders (keeps order records).' },
+    { table: 'waste_submissions', label: 'Waste Submissions', desc: 'Clears all user waste pickup submissions.' },
+  ];
+
+  const doFlush = async (table: string) => {
+    setFlushing(true);
+    setFlushMsg(null);
+    const { error } = await supabase.from(table).delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    setFlushing(false);
+    setFlushConfirm(null);
+    if (error) {
+      setFlushMsg({ text: `❌ Error: ${error.message}`, ok: false });
+    } else {
+      setFlushMsg({ text: `✓ ${table} table flushed successfully.`, ok: true });
+    }
+    setTimeout(() => setFlushMsg(null), 5000);
+  };
 
   const fetchedTabs = useRef<Set<Tab>>(new Set());
 
@@ -1466,6 +1494,112 @@ export default function AdminDashboard() {
               }
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ═══ DANGER ZONE ═══ */}
+      {activeTab === 'settings' && (
+        <div className="mt-6 max-w-xl">
+          <div className="glass-panel p-6 border-2 border-red-200">
+            <h2 className="text-lg font-black text-red-700 mb-1 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" /> Danger Zone
+            </h2>
+            <p className="text-xs text-red-500 mb-5">These actions permanently delete data from Supabase. They cannot be undone.</p>
+
+            {/* Flush feedback message */}
+            {flushMsg && (
+              <div className={`mb-4 px-4 py-2.5 rounded-xl text-sm font-semibold border ${
+                flushMsg.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
+                {flushMsg.text}
+              </div>
+            )}
+
+            {/* Flush targets */}
+            <div className="space-y-3">
+              {FLUSH_TARGETS.map(target => (
+                <div key={target.table} className="flex items-center justify-between bg-red-50/60 border border-red-100 rounded-xl px-4 py-3 gap-3">
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#1a3d1f] text-sm">{target.label}</p>
+                    <p className="text-xs text-[#5f7a60] mt-0.5">{target.desc}</p>
+                  </div>
+                  <button
+                    onClick={() => setFlushConfirm({ table: target.table, label: target.label, step: 1 })}
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-100 hover:bg-red-200 border border-red-200 px-3 py-2 rounded-xl transition-colors flex-shrink-0 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Flush
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Double-confirm modal */}
+          {flushConfirm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+                {flushConfirm.step === 1 ? (
+                  <>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h3 className="font-black text-[#1a3d1f] text-base">Flush {flushConfirm.label}?</h3>
+                    </div>
+                    <p className="text-sm text-[#5f7a60] mb-6">
+                      This will permanently delete <strong>all records</strong> in{' '}
+                      <code className="bg-red-50 px-1 rounded text-red-700">{flushConfirm.table}</code>.{' '}
+                      This action <strong>cannot be reversed</strong>.
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setFlushConfirm(null)}
+                        className="flex-1 py-2.5 rounded-xl border border-[rgba(46,125,50,0.2)] text-sm font-bold text-[#2d4a30] hover:bg-[rgba(46,125,50,0.05)] transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => setFlushConfirm(prev => prev ? { ...prev, step: 2 } : null)}
+                        className="flex-1 py-2.5 rounded-xl bg-red-100 hover:bg-red-200 text-sm font-bold text-red-700 border border-red-200 transition-colors cursor-pointer"
+                      >
+                        Continue →
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="font-black text-red-700 text-base">Absolutely sure?</h3>
+                    </div>
+                    <p className="text-sm text-red-600 font-semibold mb-6">
+                      ⚠️ You are about to permanently flush <strong>{flushConfirm.label}</strong>. There is no undo.
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setFlushConfirm(null)}
+                        className="flex-1 py-2.5 rounded-xl border border-[rgba(46,125,50,0.2)] text-sm font-bold text-[#2d4a30] hover:bg-[rgba(46,125,50,0.05)] transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => doFlush(flushConfirm.table)}
+                        disabled={flushing}
+                        className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-black transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        {flushing
+                          ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Flushing…</>
+                          : <><Trash2 className="w-4 h-4" /> Yes, Flush It</>
+                        }
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
