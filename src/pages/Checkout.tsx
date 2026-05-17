@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -36,9 +36,10 @@ export default function Checkout() {
   const [addressesLoading, setAddressesLoading] = useState(true);
 
   const [loading, setLoading] = useState(false);
+  const completingRef = useRef(false); // guard against shop-redirect when cart clears
 
   useEffect(() => {
-    if (items.length === 0) navigate('/shop');
+    if (!completingRef.current && items.length === 0) navigate('/shop');
     if (!user) navigate('/login');
   }, [items, user, navigate]);
 
@@ -155,6 +156,7 @@ export default function Checkout() {
       }));
       await refreshPoints();
     }
+    completingRef.current = true; // block shop-redirect before clearCart empties items
     clearCart();
     navigate(`/order-confirmation/${orderId}?status=${status}`);
   };
