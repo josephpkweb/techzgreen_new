@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
   Package, ShoppingBag, ChevronRight, Clock, CheckCircle2,
-  AlertTriangle, ArrowLeft, Truck, MapPin, Star, ChevronDown, ChevronUp, RefreshCw
+  AlertTriangle, ArrowLeft, Truck, MapPin, Star, ChevronDown, ChevronUp, RefreshCw, ThumbsUp
 } from 'lucide-react';
 
 type Order = {
@@ -114,6 +114,7 @@ export default function MyOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -129,6 +130,19 @@ export default function MyOrders() {
   }, [user]);
 
   const toggle = (id: string) => setExpandedId(prev => prev === id ? null : id);
+
+  const confirmReceived = async (orderId: string) => {
+    setConfirmingId(orderId);
+    await supabase.from('orders').update({
+      delivery_status: 'delivered',
+      shipped: true,
+    }).eq('id', orderId);
+    // Optimistically update local state
+    setOrders(prev => prev.map(o =>
+      o.id === orderId ? { ...o, delivery_status: 'delivered' } : o
+    ));
+    setConfirmingId(null);
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 pb-28 sm:pb-10 fade-in">
@@ -176,6 +190,14 @@ export default function MyOrders() {
             const timeStr = new Date(order.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
             const itemCount = order.order_items?.reduce((s, i) => s + i.quantity, 0) ?? 0;
             const isPending = order.status === 'pending';
+
+            // "Product Received" button logic:
+            // show if expected_delivery has passed + order not yet marked delivered
+            const deliveryPassed = order.expected_delivery
+              ? new Date(order.expected_delivery) < new Date()
+              : false;
+            const notDelivered = order.delivery_status !== 'delivered';
+            const showReceivedBtn = order.status === 'paid' && deliveryPassed && notDelivered;
 
             return (
               <div key={order.id} className="glass-card overflow-hidden">
@@ -277,6 +299,27 @@ export default function MyOrders() {
                         <RefreshCw className="w-4 h-4" /> Retry Payment
                       </Link>
                     )}
+
+                    {/* Product Received CTA — appears when expected date is past */}
+                    {showReceivedBtn && (
+                      <div className="flex flex-col gap-2 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-green-600 flex-shrink-0" />
+                          <p className="text-sm font-bold text-green-800">Did your order arrive?</p>
+                        </div>
+                        <p className="text-xs text-green-700">Your expected delivery date has passed. Let us know if you received it!</p>
+                        <button
+                          onClick={() => confirmReceived(order.id)}
+                          disabled={confirmingId === order.id}
+                          className="flex items-center justify-center gap-2 bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+                        >
+                          {confirmingId === order.id
+                            ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Confirming…</>
+                            : <><ThumbsUp className="w-4 h-4" /> Yes, I Received It!</>}
+                        </button>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
