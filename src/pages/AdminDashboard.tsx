@@ -830,6 +830,32 @@ export default function AdminDashboard() {
                           <button key={pts} onClick={() => handleApprove(sub.id, sub.user_id, pts)} className="bg-[rgba(46,125,50,0.08)] border border-[rgba(46,125,50,0.2)] text-[#2e7d32] hover:bg-[#2e7d32] hover:text-white font-black py-2 rounded-xl transition-all text-sm cursor-pointer">+{pts}</button>
                         ))}
                       </div>
+                        {/* Custom points */}
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            id={`custom-pts-${sub.id}`}
+                            type="number"
+                            min="1"
+                            placeholder="Custom pts"
+                            className="input-glass flex-1 !py-2 !text-sm"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const val = parseInt((e.target as HTMLInputElement).value);
+                                if (val > 0) { handleApprove(sub.id, sub.user_id, val); (e.target as HTMLInputElement).value = ''; }
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              const inp = document.getElementById(`custom-pts-${sub.id}`) as HTMLInputElement;
+                              const val = parseInt(inp?.value);
+                              if (val > 0) { handleApprove(sub.id, sub.user_id, val); inp.value = ''; }
+                            }}
+                            className="flex items-center gap-1 px-3 py-2 bg-[#2e7d32] hover:bg-[#1b5e20] text-white text-xs font-black rounded-xl transition-colors cursor-pointer flex-shrink-0"
+                          >
+                            <Award className="w-3.5 h-3.5" /> Award
+                          </button>
+                        </div>
                     </div>
                     <button onClick={() => handleReject(sub.id)} className="mt-auto flex items-center justify-center gap-2 w-full text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-4 py-2.5 rounded-xl font-bold transition-colors text-sm cursor-pointer"><XCircle className="w-4 h-4" /> Reject</button>
                   </div>
