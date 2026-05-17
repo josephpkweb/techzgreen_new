@@ -16,6 +16,8 @@ type Order = {
   points_used: number;
   points_discount_amount: number;
   delivery_status?: string | null;
+  expected_delivery?: string | null;
+  admin_notes?: string | null;
   order_items: { quantity: number; price_at_time: number; products: { name: string } | null }[];
   user_addresses?: {
     fullname: string; street: string; city: string; state: string; zip_code: string;
@@ -230,6 +232,30 @@ export default function MyOrders() {
                             <p className="font-bold">{order.user_addresses.fullname}</p>
                             <p>{order.user_addresses.street}, {order.user_addresses.city}, {order.user_addresses.state} — {order.user_addresses.zip_code}</p>
                           </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Expected delivery date */}
+                    {order.expected_delivery && (
+                      <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2.5">
+                        <Clock className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold text-blue-700">Expected Delivery</p>
+                          <p className="text-xs text-blue-600">
+                            {new Date(order.expected_delivery).toLocaleDateString('en-IN', { dateStyle: 'long' })}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Admin note for customer */}
+                    {order.admin_notes && (
+                      <div className="flex items-start gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5">
+                        <span className="text-sm flex-shrink-0">📦</span>
+                        <div>
+                          <p className="text-xs font-bold text-amber-700 mb-0.5">Update from TechzGreen</p>
+                          <p className="text-xs text-amber-800">{order.admin_notes}</p>
                         </div>
                       </div>
                     )}

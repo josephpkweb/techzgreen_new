@@ -20,14 +20,24 @@ function OrderCard({
   expandedOrderId: string | null;
   setExpandedOrderId: (id: string | null) => void;
   orderUpdating: string | null;
-  updateOrderTracking: (id: string, shipped: boolean, date: string, notes: string) => void;
+  updateOrderTracking: (id: string, deliveryStatus: string, date: string, notes: string) => void;
   ADMIN_EMAIL: string;
 }) {
   const isExpanded = expandedOrderId === order.id;
   const addr = order.user_addresses;
-  const [trackShipped, setTrackShipped] = useState(order.shipped || false);
+  const [trackStatus, setTrackStatus] = useState<string>(order.delivery_status || 'placed');
   const [trackDate, setTrackDate] = useState<string>(order.expected_delivery || '');
   const [trackNotes, setTrackNotes] = useState<string>(order.admin_notes || '');
+
+  const STAGE_LABELS: Record<string, string> = {
+    placed: '📦 Order Placed',
+    confirmed: '✅ Order Confirmed',
+    shipped: '🚚 Shipped',
+    out: '🛵 Out for Delivery',
+    delivered: '🏠 Delivered',
+  };
+
+  const currentLabel = STAGE_LABELS[order.delivery_status] || '📦 Order Placed';
 
   return (
     <div className={`glass-card overflow-hidden transition-all ${orderUpdating === order.id ? 'opacity-60' : ''}`}>
@@ -36,19 +46,29 @@ function OrderCard({
         onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
         className="w-full flex items-center gap-4 p-4 sm:p-5 text-left cursor-pointer"
       >
-        <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${order.shipped ? 'bg-green-100 text-green-700' : 'bg-amber-50 text-amber-600'}`}>
-          {order.shipped ? <Truck className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+        <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+          order.delivery_status === 'delivered' ? 'bg-green-100 text-green-700'
+          : order.delivery_status === 'shipped' || order.delivery_status === 'out' ? 'bg-blue-50 text-blue-600'
+          : 'bg-amber-50 text-amber-600'
+        }`}>
+          {order.delivery_status === 'delivered' ? <CheckCheck className="w-5 h-5" />
+          : order.delivery_status === 'shipped' || order.delivery_status === 'out' ? <Truck className="w-5 h-5" />
+          : <Clock className="w-5 h-5" />}
         </div>
         <div className="flex-grow min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-black text-[#1a3d1f] text-sm">#{order.id.substring(0,8).toUpperCase()}</p>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${order.shipped ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-              {order.shipped ? '✓ Shipped' : 'Pending'}
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+              order.delivery_status === 'delivered' ? 'bg-green-100 text-green-700'
+              : order.delivery_status === 'shipped' || order.delivery_status === 'out' ? 'bg-blue-100 text-blue-700'
+              : 'bg-amber-100 text-amber-700'
+            }`}>
+              {currentLabel}
             </span>
           </div>
           <p className="text-xs text-[#5f7a60] mt-0.5">
             {new Date(order.created_at).toLocaleString('en-IN')}
-            {order.expected_delivery && ` · Expected: ${new Date(order.expected_delivery).toLocaleDateString('en-IN', { dateStyle: 'medium' })}`}
+            {order.expected_delivery && ` · Delivery: ${new Date(order.expected_delivery).toLocaleDateString('en-IN', { dateStyle: 'medium' })}`}
           </p>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -119,18 +139,21 @@ function OrderCard({
           <div className="bg-white/70 rounded-2xl p-5 border border-[rgba(46,125,50,0.12)]">
             <h3 className="font-bold text-[#1a3d1f] mb-4 flex items-center gap-1.5 text-sm"><Truck className="w-4 h-4 text-[#2e7d32]" /> Shipping Controls</h3>
             <div className="space-y-4">
-              {/* Shipped checkbox */}
-              <div
-                onClick={() => setTrackShipped(!trackShipped)}
-                className="flex items-center gap-3 cursor-pointer group"
-              >
-                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${trackShipped ? 'bg-[#2e7d32] border-[#2e7d32]' : 'border-[rgba(46,125,50,0.4)] group-hover:border-[#2e7d32]'}`}>
-                  {trackShipped && <CheckCheck className="w-4 h-4 text-white" />}
-                </div>
-                <div>
-                  <p className="font-bold text-[#1a3d1f] text-sm">Mark as Shipped</p>
-                  <p className="text-xs text-[#5f7a60]">{trackShipped ? '✓ Order marked as shipped' : 'Tick when order leaves warehouse'}</p>
-                </div>
+
+              {/* Delivery Stage Dropdown */}
+              <div>
+                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Delivery Stage</label>
+                <select
+                  value={trackStatus}
+                  onChange={e => setTrackStatus(e.target.value)}
+                  className="input-glass"
+                >
+                  <option value="placed">📦 Order Placed</option>
+                  <option value="confirmed">✅ Order Confirmed</option>
+                  <option value="shipped">🚚 Shipped</option>
+                  <option value="out">🛵 Out for Delivery</option>
+                  <option value="delivered">🏠 Delivered</option>
+                </select>
               </div>
 
               {/* Expected Delivery Date */}
@@ -144,26 +167,27 @@ function OrderCard({
                 />
               </div>
 
-              {/* Admin Notes */}
+              {/* Admin Notes (visible to customer) */}
               <div>
-                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Internal Notes</label>
+                <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Note for Customer</label>
                 <textarea
                   rows={2}
                   value={trackNotes}
                   onChange={e => setTrackNotes(e.target.value)}
-                  placeholder="e.g. Courier: BlueDart, AWB 123456..."
+                  placeholder="e.g. Courier: BlueDart, AWB 123456. Estimated by Monday..."
                   className="input-glass resize-none"
                 />
+                <p className="text-[11px] text-[#5f7a60] mt-1">This note will be shown to the customer on their order page.</p>
               </div>
 
               <button
-                onClick={() => updateOrderTracking(order.id, trackShipped, trackDate, trackNotes)}
+                onClick={() => updateOrderTracking(order.id, trackStatus, trackDate, trackNotes)}
                 disabled={orderUpdating === order.id}
                 className="btn-primary flex items-center gap-2 !py-2.5 !px-6 disabled:opacity-50"
               >
                 {orderUpdating === order.id
                   ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Saving...</>
-                  : <><CheckCheck className="w-4 h-4" /> Save &amp; Update</>
+                  : <><CheckCheck className="w-4 h-4" /> Save &amp; Update Customer</>
                 }
               </button>
             </div>
@@ -174,8 +198,8 @@ function OrderCard({
   );
 }
 
-
 type Tab = 'submissions' | 'products' | 'banners' | 'events' | 'orders' | 'vouchers' | 'partner_merch' | 'partners' | 'settings';
+
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -449,22 +473,19 @@ export default function AdminDashboard() {
 
   const updateOrderTracking = async (
     orderId: string,
-    shipped: boolean,
+    deliveryStatus: string,
     expectedDelivery: string,
     adminNotes: string
   ) => {
     setOrderUpdating(orderId);
-    const currentOrder = orders.find((o: any) => o.id === orderId);
-    const currentStatus = currentOrder?.status ?? 'paid';
-    let newStatus = currentStatus;
-    if (shipped && currentStatus !== 'delivered') newStatus = 'shipped';
-    if (!shipped && currentStatus === 'shipped') newStatus = 'paid';
+    // Derive shipped boolean for backward compat
+    const shipped = ['shipped', 'out', 'delivered'].includes(deliveryStatus);
 
     await supabase.from('orders').update({
+      delivery_status: deliveryStatus,
       shipped,
       expected_delivery: expectedDelivery || null,
       admin_notes: adminNotes || null,
-      status: newStatus,
     }).eq('id', orderId);
     await fetchOrders();
     setOrderUpdating(null);
