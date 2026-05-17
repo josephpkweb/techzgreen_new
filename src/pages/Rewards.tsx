@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { UploadCloud, CheckCircle2, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
 import { ZLeaf } from '../components/ZLeaf';
-import QRCode from 'react-qr-code';
+import { QRCode } from 'react-qr-code';
 import Barcode from 'react-barcode';
 import type { Submission } from '../types';
 
