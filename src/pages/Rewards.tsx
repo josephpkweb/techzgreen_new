@@ -1,83 +1,140 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { UploadCloud, CheckCircle2, Clock, XCircle, Gift, Tag, Star, QrCode } from 'lucide-react';
+import { UploadCloud, CheckCircle2, Clock, XCircle, Gift, Tag, Star, QrCode, Share2, X as XIcon } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
 import { ZLeaf } from '../components/ZLeaf';
 import { QRCode } from 'react-qr-code';
 import Barcode from 'react-barcode';
+import { useToast } from '../components/Toast';
 import type { Submission } from '../types';
 
-// MyVoucherCard: compact card showing QR or Barcode
-function MyVoucherCard({ uv, scanCode, isUsed }: { uv: any; scanCode: string; isUsed: boolean }) {
-  const [displayMode, setDisplayMode] = useState<'qr' | 'barcode'>('qr');
+/* ── Premium Voucher Modal ── */
+function VoucherModal({ uv, scanCode, isUsed, onClose }: { uv: any; scanCode: string; isUsed: boolean; onClose: () => void }) {
+  const [mode, setMode] = useState<'qr'|'barcode'>('qr');
+  const { toast } = useToast();
   const v = uv.vouchers;
   const isFlat = v?.discount_type === 'flat';
   const discountLabel = isFlat ? `₹${v?.discount_value} OFF` : `${v?.discount_value}% OFF`;
+  const ticketRef = useRef<HTMLDivElement>(null);
+
+  const handleShare = async () => {
+    const msg = `🌿 I got a ${discountLabel} voucher for ${v?.brand_name} on TechzGreen!\nRedeem eco-friendly rewards at: https://techzgreen.in/rewards\nCode: ${scanCode}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: `${v?.brand_name} Voucher - TechzGreen`, text: msg, url: 'https://techzgreen.in/rewards' }); }
+      catch {}
+    } else {
+      await navigator.clipboard.writeText(msg);
+      toast('Voucher details copied to clipboard!', 'success');
+    }
+  };
 
   return (
-    <div className={`bg-gradient-to-r from-[#1a3d1f] to-[#2e7d32] rounded-xl p-3.5 text-white shadow-md relative overflow-hidden ${isUsed ? 'opacity-50 grayscale' : ''}`}>
-      <div className="absolute right-0 top-0 h-full w-24 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-      <div className="relative z-10">
-        {/* Header row */}
-        <div className="flex items-center justify-between gap-2 mb-0.5">
-          <p className="text-amber-300 font-bold text-[10px] uppercase tracking-wider truncate">{v?.brand_name}</p>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <span className="bg-white/20 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md">{discountLabel}</span>
-            {isUsed && <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">Used</span>}
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={onClose}>
+      <div ref={ticketRef} className="relative w-full max-w-sm" onClick={e => e.stopPropagation()}>
+        {/* Ticket body */}
+        <div className={`rounded-3xl overflow-hidden shadow-2xl ${isUsed ? 'grayscale opacity-70' : ''}`}>
+          {/* Top section — dark green */}
+          <div className="bg-gradient-to-br from-[#0d2611] via-[#1a3d1f] to-[#2e7d32] p-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-geometric.png')] opacity-10" />
+            <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/5 rounded-full" />
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-amber-400 font-black text-[11px] uppercase tracking-widest mb-1">{v?.brand_name}</p>
+                  <h2 className="text-white font-black text-2xl leading-tight">{v?.title}</h2>
+                </div>
+                <div className="bg-amber-400 text-[#0d2611] font-black text-sm px-3 py-1.5 rounded-xl flex-shrink-0">{discountLabel}</div>
+              </div>
+              {v?.description && <p className="text-white/60 text-xs leading-relaxed">{v.description}</p>}
+              {isUsed && <div className="mt-3 bg-red-500/20 border border-red-400/30 rounded-xl px-3 py-1.5 text-red-300 text-xs font-bold text-center">✗ REDEEMED</div>}
+            </div>
+          </div>
+
+          {/* Ticket tear line */}
+          <div className="bg-[#1a3d1f] flex items-center relative h-6">
+            <div className="absolute -left-3 w-6 h-6 bg-black/60 rounded-full" />
+            <div className="absolute -right-3 w-6 h-6 bg-black/60 rounded-full" />
+            <div className="w-full border-t-2 border-dashed border-white/20 mx-6" />
+          </div>
+
+          {/* Bottom section — white */}
+          <div className="bg-white p-6">
+            {!isUsed ? (
+              <>
+                {/* Toggle */}
+                <div className="flex rounded-xl overflow-hidden border border-gray-200 mb-4">
+                  {(['qr','barcode'] as const).map(m => (
+                    <button key={m} onClick={() => setMode(m)}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold transition-colors cursor-pointer ${mode === m ? 'bg-[#2e7d32] text-white' : 'text-gray-400 hover:text-gray-600'}`}>
+                      {m === 'qr' ? <QrCode className="w-3 h-3" /> : <Tag className="w-3 h-3" />}
+                      {m === 'qr' ? 'QR Code' : 'Barcode'}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-center items-center bg-gray-50 rounded-2xl p-4 min-h-[120px]">
+                  {mode === 'qr'
+                    ? <QRCode value={scanCode} size={100} level="M" />
+                    : <Barcode value={scanCode} width={1.2} height={55} fontSize={9} displayValue background="#f9fafb" lineColor="#1a3d1f" />
+                  }
+                </div>
+                <p className="text-center font-mono font-black text-[#1a3d1f] text-sm tracking-widest mt-3 bg-gray-100 rounded-xl py-2 px-3">{scanCode}</p>
+                <p className="text-center text-[10px] text-gray-400 mt-2">Show QR or barcode at store to redeem</p>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-400 text-sm">Redeemed on {uv.used_at ? new Date(uv.used_at).toLocaleDateString('en-IN') : '—'}</p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-2 mt-4">
+              <button onClick={handleShare}
+                className="flex-1 flex items-center justify-center gap-2 bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm py-3 rounded-2xl transition-colors cursor-pointer">
+                <Share2 className="w-4 h-4" /> Share Voucher
+              </button>
+              <button onClick={onClose}
+                className="w-12 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors cursor-pointer">
+                <XIcon className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
           </div>
         </div>
-        <h3 className="font-black text-sm leading-tight mb-0.5 truncate">{v?.title}</h3>
-
-        {/* QR / Barcode toggle */}
-        {!isUsed && (
-          <>
-            <div className="flex rounded-md overflow-hidden border border-white/20 mb-2 mt-2">
-              <button
-                onClick={() => setDisplayMode('qr')}
-                className={`flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-bold transition-colors cursor-pointer ${displayMode === 'qr' ? 'bg-white text-[#1a3d1f]' : 'text-white/70 hover:text-white'}`}
-              >
-                <QrCode className="w-2.5 h-2.5" /> QR Code
-              </button>
-              <button
-                onClick={() => setDisplayMode('barcode')}
-                className={`flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-bold transition-colors cursor-pointer ${displayMode === 'barcode' ? 'bg-white text-[#1a3d1f]' : 'text-white/70 hover:text-white'}`}
-              >
-                <Tag className="w-2.5 h-2.5" /> Barcode
-              </button>
-            </div>
-            <div className="bg-white rounded-lg p-2 flex justify-center items-center overflow-hidden">
-              {displayMode === 'qr' ? (
-                <QRCode value={scanCode} size={80} level="M" />
-              ) : (
-                <Barcode
-                  value={scanCode}
-                  width={1.0}
-                  height={45}
-                  fontSize={8}
-                  displayValue
-                  background="#ffffff"
-                  lineColor="#1a3d1f"
-                />
-              )}
-            </div>
-            <p className="text-center text-[9px] text-white/50 mt-1.5">Show this at the store to redeem</p>
-            <p className="text-center font-mono font-black text-white text-xs tracking-widest mt-1 bg-white/10 rounded-md py-1 px-2 letter-spacing-widest">{scanCode}</p>
-          </>
-        )}
-        {isUsed && (
-          <div className="bg-white/10 rounded-lg p-2 text-center text-xs text-white/60 mt-2">
-            Redeemed · {uv.used_at ? new Date(uv.used_at).toLocaleDateString('en-IN') : ''}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
+/* ── Compact grid card (click to open modal) ── */
+function MyVoucherCard({ uv, scanCode, isUsed }: { uv: any; scanCode: string; isUsed: boolean }) {
+  const [open, setOpen] = useState(false);
+  const v = uv.vouchers;
+  const isFlat = v?.discount_type === 'flat';
+  const discountLabel = isFlat ? `₹${v?.discount_value} OFF` : `${v?.discount_value}% OFF`;
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}
+        className={`w-full text-left bg-gradient-to-br from-[#1a3d1f] to-[#2e7d32] rounded-2xl p-4 shadow-md relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform ${isUsed ? 'opacity-50 grayscale' : ''}`}>
+        <div className="absolute right-0 top-0 h-full w-20 bg-white/5 rounded-full blur-xl" />
+        <div className="relative z-10">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <p className="text-amber-400 font-black text-[10px] uppercase tracking-wider truncate">{v?.brand_name}</p>
+            <span className="bg-amber-400 text-[#0d2611] font-black text-[10px] px-2 py-0.5 rounded-lg flex-shrink-0">{discountLabel}</span>
+          </div>
+          <p className="text-white font-black text-base leading-tight truncate mb-1">{v?.title}</p>
+          <p className="text-white/50 text-[10px]">{isUsed ? '✗ Used' : 'Tap to view & share'}</p>
+        </div>
+      </button>
+      {open && <VoucherModal uv={uv} scanCode={scanCode} isUsed={isUsed} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
 export default function Rewards() {
   const { user, totalPoints, refreshPoints } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'earn' | 'store' | 'vouchers'>('earn');
 
   const [file, setFile] = useState<File | null>(null);
@@ -132,7 +189,7 @@ export default function Rewards() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
     if (f && !f.type.startsWith('image/')) {
-      alert('Please select an image file (JPG, PNG, WEBP).');
+      toast('Please select an image file (JPG, PNG, WEBP).', 'warning');
       e.target.value = '';
       return;
     }
@@ -158,7 +215,7 @@ export default function Rewards() {
       setPreview(null);
       fetchSubmissions();
     } catch (error: any) {
-      alert(error.message);
+      toast(error.message, 'error');
     } finally {
       setUploading(false);
     }
@@ -168,18 +225,18 @@ export default function Rewards() {
 
   const buyVoucher = async (voucher: any) => {
     if (!user) return;
-    if (totalPoints < voucher.points_cost) { alert("Not enough points!"); return; }
+    if (totalPoints < voucher.points_cost) { toast('Not enough Z Coins!', 'error'); return; }
     
     // Check limit
     const limit = voucher.user_limit || 1;
     const boughtCount = myVouchers.filter((v: any) => v.voucher_id === voucher.id).length;
     if (boughtCount >= limit) {
-      alert(`Limit reached! You can only buy this voucher ${limit} time(s).`);
+      toast(`Limit reached! Max ${limit} per user.`, 'warning');
       return;
     }
 
     if (voucher.end_date && new Date(voucher.end_date) < new Date()) {
-      alert("This voucher has expired.");
+      toast('This voucher has expired.', 'warning');
       return;
     }
 
@@ -193,9 +250,9 @@ export default function Rewards() {
       if (voucherError) throw voucherError;
       await fetchMyVouchers();
       await refreshPoints();
-      alert("Voucher purchased successfully! You can see it in 'My Vouchers'.");
+      toast('Voucher activated! Check My Vouchers tab.', 'success');
     } catch (err: any) {
-      alert("Failed to purchase: " + err.message);
+      toast('Failed to purchase: ' + err.message, 'error');
     } finally {
       setBuying(false);
     }
@@ -218,28 +275,22 @@ export default function Rewards() {
       <div className="max-w-4xl mx-auto px-4">
 
         {/* ── Hero ── */}
-        <div className="glass-panel-dark mt-4 sm:mt-6 p-5 sm:p-8 relative overflow-hidden rounded-2xl mb-5">
+        <div className="glass-panel-dark mt-4 sm:mt-5 p-4 sm:p-5 relative overflow-hidden rounded-2xl mb-5">
           <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]" />
-          <div className="relative z-10 sm:flex sm:items-center sm:justify-between sm:gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <GCoinIcon size={32} />
-                <h1 className="text-xl sm:text-2xl font-black text-white" style={{ fontFamily: 'Outfit,sans-serif' }}>Z Coins</h1>
-              </div>
-              <p className="text-[rgba(200,230,201,0.8)] text-xs sm:text-sm leading-relaxed max-w-sm">
-                Submit waste photos to earn · redeem for vouchers & discounts!
-              </p>
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="flex-shrink-0"><GCoinIcon size={36} /></div>
+            <div className="flex-grow min-w-0">
+              <h1 className="text-base font-black text-white" style={{ fontFamily: 'Outfit,sans-serif' }}>Z Coins</h1>
+              <p className="text-[rgba(200,230,201,0.7)] text-[11px] leading-snug">Submit waste · earn coins · redeem vouchers</p>
             </div>
-            <div className="flex gap-3 mt-4 sm:mt-0">
-              <div className="stat-box-dark px-4 py-3 flex flex-col items-center justify-center gap-1">
-                <GCoinIcon size={28} />
-                <p className="stat-num text-2xl text-center">{totalEarned}</p>
-                <p className="stat-label text-center">Earned</p>
+            <div className="flex gap-2 flex-shrink-0">
+              <div className="stat-box-dark px-3 py-2 flex flex-col items-center gap-0.5">
+                <p className="stat-num !text-lg text-center">{totalEarned}</p>
+                <p className="stat-label text-center !text-[9px]">Earned</p>
               </div>
-              <div className="stat-box-dark px-4 py-3 flex flex-col items-center justify-center gap-1">
-                <GCoinIcon size={28} />
-                <p className="stat-num text-2xl text-center">{totalPoints}</p>
-                <p className="stat-label text-center">Balance</p>
+              <div className="stat-box-dark px-3 py-2 flex flex-col items-center gap-0.5">
+                <p className="stat-num !text-lg text-center">{totalPoints}</p>
+                <p className="stat-label text-center !text-[9px]">Balance</p>
               </div>
             </div>
           </div>

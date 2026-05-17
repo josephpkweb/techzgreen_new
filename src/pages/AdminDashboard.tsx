@@ -1371,24 +1371,36 @@ export default function AdminDashboard() {
                 {partners.filter((p: any) => p.status !== 'pending' && p.status !== 'rejected').map((p: any) => {
                   const stats = partnerAnalytics[p.id] || { redemptions: 0, settlement: 0 };
                   return (
-                    <div key={p.id} className="glass-card p-4 flex gap-3 items-center">
-                      <div className="bg-[rgba(46,125,50,0.1)] w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-[#2e7d32] font-black">
-                        {p.company_name[0]}
+                    <div key={p.id} className="glass-card p-4 flex flex-col gap-3">
+                      <div className="flex gap-3 items-center">
+                        <div className="bg-[rgba(46,125,50,0.1)] w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-[#2e7d32] font-black">
+                          {p.company_name[0]}
+                        </div>
+                        <div className="flex-grow min-w-0">
+                          <h3 className="font-bold text-[#1a3d1f] text-sm">{p.company_name}</h3>
+                          <p className="text-xs text-[#5f7a60] truncate">{p.contact_email}</p>
+                        </div>
+                        <div className="flex gap-2 flex-shrink-0">
+                          <button
+                            onClick={() => setAnalyticsModalPartner(p)}
+                            className="px-2.5 py-1.5 text-xs font-bold bg-[rgba(46,125,50,0.08)] text-[#2e7d32] hover:bg-[rgba(46,125,50,0.15)] rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <BarChart3 className="w-3.5 h-3.5" /> Analytics
+                          </button>
+                          <button onClick={() => deletePartner(p.id, p.user_id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex-grow min-w-0">
-                        <h3 className="font-bold text-[#1a3d1f] text-sm">{p.company_name}</h3>
-                        <p className="text-xs text-[#5f7a60]">{stats.redemptions} redemptions · ₹{stats.settlement.toFixed(0)} owed</p>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <button
-                          onClick={() => setAnalyticsModalPartner(p)}
-                          className="px-2.5 py-1.5 text-xs font-bold bg-[rgba(46,125,50,0.08)] text-[#2e7d32] hover:bg-[rgba(46,125,50,0.15)] rounded-lg transition-colors cursor-pointer flex items-center gap-1"
-                        >
-                          <BarChart3 className="w-3.5 h-3.5" /> Analytics
-                        </button>
-                        <button onClick={() => deletePartner(p.id, p.user_id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-xl cursor-pointer">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <div className="grid grid-cols-2 gap-2 mt-1">
+                        <div className="bg-[rgba(46,125,50,0.06)] border border-[rgba(46,125,50,0.12)] rounded-xl p-3 text-center">
+                          <p className="text-xl font-black text-[#2e7d32]">{stats.redemptions}</p>
+                          <p className="text-[10px] text-[#5f7a60] font-semibold mt-0.5">Total Redemptions</p>
+                        </div>
+                        <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-center">
+                          <p className="text-xl font-black text-amber-600">₹{stats.settlement.toFixed(0)}</p>
+                          <p className="text-[10px] text-[#5f7a60] font-semibold mt-0.5">TechzGreen Owes</p>
+                        </div>
                       </div>
                     </div>
                   );

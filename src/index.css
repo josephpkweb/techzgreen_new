@@ -206,6 +206,14 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  .animate-fade-in-up {
+    animation: fadeInUp 0.3s ease-out both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* ── Stat box inside DARK panels (high contrast) ── */
   .stat-box-dark {
     background: rgba(0, 0, 0, 0.25);
