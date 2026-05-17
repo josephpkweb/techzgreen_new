@@ -4,12 +4,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
-  User, Mail, MapPin, Plus, Trash2, CheckCircle2,
+  User, MapPin, Plus, Trash2, CheckCircle2,
   XCircle, Clock, Award, Gift, TrendingUp, TrendingDown,
   Camera, ShoppingBag, Calendar, ChevronRight, Pencil, X, Check
 } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
-import { ZLeaf } from '../components/ZLeaf';
 
 // ─── Address Form ───────────────────────────────────────────────────────────
 function AddressForm({ onSave, onCancel, saving }: {
