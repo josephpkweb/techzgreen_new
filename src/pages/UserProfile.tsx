@@ -255,8 +255,8 @@ export default function UserProfile() {
         <div className="space-y-6">
 
           {/* Points History */}
-          <div className="glass-panel p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="glass-panel p-4 sm:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-5">
               <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2"><Award className="w-5 h-5 text-[#ffb300]" />Z Coin History</h2>
               <Link to="/rewards" className="text-xs font-bold text-[#2e7d32] flex items-center gap-1 hover:underline">
                 Earn more <ChevronRight className="w-3 h-3" />
@@ -288,8 +288,8 @@ export default function UserProfile() {
           </div>
 
           {/* Redeemed Vouchers */}
-          <div className="glass-panel p-6">
-            <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2 mb-5"><Gift className="w-5 h-5 text-[#2e7d32]" />My Vouchers</h2>
+          <div className="glass-panel p-4 sm:p-6">
+            <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2 mb-4 sm:mb-5"><Gift className="w-5 h-5 text-[#2e7d32]" />My Vouchers</h2>
             {vouchers.length === 0 ? (
               <div className="text-center py-8">
                 <Gift className="w-10 h-10 text-[rgba(46,125,50,0.18)] mx-auto mb-2" />
@@ -321,8 +321,8 @@ export default function UserProfile() {
         <div className="space-y-6">
 
           {/* Addresses */}
-          <div className="glass-panel p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="glass-panel p-4 sm:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-5">
               <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2"><MapPin className="w-5 h-5 text-[#2e7d32]" />Saved Addresses</h2>
               {!showAddrForm && (
                 <button
@@ -362,8 +362,8 @@ export default function UserProfile() {
           </div>
 
           {/* Waste Submissions */}
-          <div className="glass-panel p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="glass-panel p-4 sm:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-5">
               <h2 className="text-lg font-bold text-[#1a3d1f] flex items-center gap-2"><Camera className="w-5 h-5 text-[#2e7d32]" />Waste Submissions</h2>
               <Link to="/rewards" className="text-xs font-bold text-[#2e7d32] flex items-center gap-1 hover:underline">
                 Submit new <ChevronRight className="w-3 h-3" />
@@ -400,7 +400,7 @@ export default function UserProfile() {
           </div>
 
           {/* Quick nav */}
-          <div className="glass-panel p-5">
+          <div className="glass-panel p-4 sm:p-6">
             <p className="text-xs font-bold text-[#5f7a60] uppercase tracking-wide mb-3">Quick Links</p>
             <div className="grid grid-cols-2 gap-2">
               {[
