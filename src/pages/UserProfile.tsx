@@ -175,27 +175,26 @@ export default function UserProfile() {
       </Helmet>
 
       {/* ── Hero ── */}
-      <div className="glass-panel-dark p-6 sm:p-8 mb-8 relative overflow-hidden">
+      <div className="glass-panel-dark p-4 sm:p-6 mb-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')]" />
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+        <div className="relative z-10 flex items-center gap-4">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4caf50] to-[#2e7d32] flex items-center justify-center text-white font-black text-2xl shadow-lg" style={{ fontFamily: 'Outfit,sans-serif' }}>
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-[#4caf50] to-[#2e7d32] flex items-center justify-center text-white font-black text-xl shadow-lg" style={{ fontFamily: 'Outfit,sans-serif' }}>
               {initials}
             </div>
-            <ZLeaf className="w-4 h-4" color="black" />
           </div>
 
           {/* Name & Email */}
-          <div className="flex-grow min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex-grow min-w-0 overflow-hidden">
+            <div className="flex items-center gap-2">
               {editName ? (
                 <div className="flex items-center gap-2">
                   <input
                     autoFocus
                     value={displayName}
                     onChange={e => setDisplayName(e.target.value)}
-                    className="bg-white/10 border border-white/30 text-white rounded-lg px-3 py-1.5 text-lg font-bold outline-none focus:border-white/60 placeholder:text-white/40"
+                    className="bg-white/10 border border-white/30 text-white rounded-lg px-3 py-1.5 text-base font-bold outline-none focus:border-white/60 placeholder:text-white/40 max-w-[160px]"
                     placeholder="Your name"
                   />
                   <button onClick={saveName} disabled={savingName} className="p-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-white transition-colors">
@@ -207,23 +206,21 @@ export default function UserProfile() {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-2xl sm:text-3xl font-black text-white">{displayName || user.email?.split('@')[0]}</h1>
-                  <button onClick={() => setEditName(true)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 transition-colors">
-                    <Pencil className="w-3.5 h-3.5" />
+                  <h1 className="text-lg sm:text-xl font-black text-white truncate">{displayName || user.email?.split('@')[0]}</h1>
+                  <button onClick={() => setEditName(true)} className="p-1 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 transition-colors flex-shrink-0">
+                    <Pencil className="w-3 h-3" />
                   </button>
                 </>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-              <span className="flex items-center gap-1.5 text-[rgba(200,230,201,0.8)] text-sm"><Mail className="w-3.5 h-3.5" />{user.email}</span>
-              <span className="flex items-center gap-1.5 text-[rgba(200,230,201,0.7)] text-xs"><Calendar className="w-3 h-3" />Joined {joinedDate}</span>
-            </div>
+            <p className="text-[rgba(200,230,201,0.8)] text-xs mt-0.5 truncate">{user.email}</p>
+            <p className="text-[rgba(200,230,201,0.6)] text-[11px] mt-0.5">Joined {joinedDate}</p>
           </div>
 
           {/* Z Coins */}
-          <div className="stat-box-dark px-5 py-3 flex flex-col items-center justify-center gap-1 flex-shrink-0">
-            <GCoinIcon size={42} />
-            <p className="stat-num text-3xl text-center">{totalPoints}</p>
+          <div className="stat-box-dark px-3 py-2 flex flex-col items-center justify-center gap-0.5 flex-shrink-0">
+            <GCoinIcon size={32} />
+            <p className="stat-num !text-xl text-center">{totalPoints}</p>
           </div>
         </div>
       </div>
