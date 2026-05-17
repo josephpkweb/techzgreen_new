@@ -252,7 +252,7 @@ export default function UserProfile() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* ── Left column ── */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
 
           {/* Points History */}
           <div className="glass-panel p-4 sm:p-6">
@@ -318,7 +318,7 @@ export default function UserProfile() {
         </div>
 
         {/* ── Right column ── */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
 
           {/* Addresses */}
           <div className="glass-panel p-4 sm:p-6">
