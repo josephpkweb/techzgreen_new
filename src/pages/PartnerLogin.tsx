@@ -12,6 +12,7 @@ export default function PartnerLogin() {
   const [isRegister, setIsRegister] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   
   const [showPw, setShowPw] = useState(false);
@@ -50,6 +51,7 @@ export default function PartnerLogin() {
         user_id: user.id,
         company_name: companyName,
         contact_email: email || user.email,
+        contact_phone: phone,
         status: 'pending'
       });
       if (insertErr) throw insertErr;
@@ -79,6 +81,7 @@ export default function PartnerLogin() {
               user_id: signInData.user.id,
               company_name: companyName,
               contact_email: email,
+              contact_phone: phone,
               status: 'pending'
             });
             if (insertErr) throw insertErr;
@@ -96,6 +99,7 @@ export default function PartnerLogin() {
           user_id: data.user.id,
           company_name: companyName,
           contact_email: email,
+          contact_phone: phone,
           status: 'pending'
         });
         if (insertErr) throw insertErr;
@@ -171,6 +175,10 @@ export default function PartnerLogin() {
                       <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Company Name</label>
                       <input required value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. EcoBrand" className="input-glass w-full" />
                     </div>
+                    <div>
+                      <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Phone Number</label>
+                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 0000000000" className="input-glass w-full" />
+                    </div>
                     <button onClick={handleApply} disabled={loading} className="btn-primary w-full !py-3 flex items-center justify-center gap-2">
                       {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Submit Application
                     </button>
@@ -188,10 +196,16 @@ export default function PartnerLogin() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {isRegister && (
-                  <div>
-                    <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Company Name</label>
-                    <input required value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. EcoBrand" className="input-glass" />
-                  </div>
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Company Name</label>
+                      <input required value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. EcoBrand" className="input-glass" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Phone Number</label>
+                      <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 0000000000" className="input-glass" />
+                    </div>
+                  </>
                 )}
                 <div>
                   <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Partner Email</label>

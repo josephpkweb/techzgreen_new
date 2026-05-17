@@ -20,9 +20,10 @@ const UserProfile      = lazy(() => import('./pages/UserProfile'));
 const FeaturedProducts = lazy(() => import('./pages/FeaturedProducts'));
 const PartnerLogin     = lazy(() => import('./pages/PartnerLogin'));
 const PartnerDashboard = lazy(() => import('./pages/PartnerDashboard'));
+const PrivacyPolicy    = lazy(() => import('./pages/PrivacyPolicy'));
 
 // Footer only on public content pages — not auth/checkout/dashboard flows
-const FOOTER_ROUTES = ['/', '/about', '/shop', '/featured-products', '/events', '/rewards'];
+const FOOTER_ROUTES = ['/', '/about', '/shop', '/featured-products', '/events', '/rewards', '/privacy-policy'];
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -63,6 +64,7 @@ function AppInner() {
             <Route path="/stitch-landing"        element={<StitchLanding />} />
             <Route path="/profile"               element={<UserProfile />} />
             <Route path="/featured-products"     element={<FeaturedProducts />} />
+            <Route path="/privacy-policy"        element={<PrivacyPolicy />} />
             <Route path="/partner/login"         element={<PartnerLogin />} />
             <Route path="/partner/dashboard"     element={<PartnerDashboard />} />
             <Route path="*"                      element={<Navigate to="/" replace />} />

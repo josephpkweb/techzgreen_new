@@ -82,11 +82,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfileAndPoints(session.user.id);
+        // After Google OAuth signup, persist name + phone captured before redirect
+        const signupName  = sessionStorage.getItem('signup_name');
+        const signupPhone = sessionStorage.getItem('signup_phone');
+        if (signupName || signupPhone) {
+          sessionStorage.removeItem('signup_name');
+          sessionStorage.removeItem('signup_phone');
+          // Update auth user metadata with full_name so profile page shows it immediately
+          if (signupName) {
+            await supabase.auth.updateUser({ data: { full_name: signupName, phone: signupPhone } });
+          }
+          // Persist to profiles table (assumes profiles has full_name and phone columns)
+          await supabase.from('profiles').update({
+            ...(signupName  ? { full_name: signupName }  : {}),
+            ...(signupPhone ? { phone: signupPhone }     : {}),
+          }).eq('id', session.user.id);
+        }
       } else {
         setProfileRole(null);
         setTotalPoints(0);
@@ -105,7 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/profile' },
+      options: { redirectTo: window.location.origin + '/' },
     });
   };
 

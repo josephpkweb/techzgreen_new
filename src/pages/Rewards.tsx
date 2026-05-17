@@ -231,19 +231,15 @@ export default function Rewards() {
               </p>
             </div>
             <div className="flex gap-3 mt-4 sm:mt-0">
-              <div className="stat-box-dark px-4 py-3 flex items-center gap-2">
+              <div className="stat-box-dark px-4 py-3 flex flex-col items-center justify-center gap-1">
                 <GCoinIcon size={28} />
-                <div>
-                  <p className="stat-num text-2xl">{totalEarned}</p>
-                  <p className="stat-label">Earned</p>
-                </div>
+                <p className="stat-num text-2xl text-center">{totalEarned}</p>
+                <p className="stat-label text-center">Earned</p>
               </div>
-              <div className="stat-box-dark px-4 py-3 flex items-center gap-2">
+              <div className="stat-box-dark px-4 py-3 flex flex-col items-center justify-center gap-1">
                 <GCoinIcon size={28} />
-                <div>
-                  <p className="stat-num text-2xl">{totalPoints}</p>
-                  <p className="stat-label">Balance</p>
-                </div>
+                <p className="stat-num text-2xl text-center">{totalPoints}</p>
+                <p className="stat-label text-center">Balance</p>
               </div>
             </div>
           </div>

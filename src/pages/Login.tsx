@@ -21,7 +21,7 @@ export default function Login() {
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
-      navigate('/profile');
+      navigate('/');
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign in.');
     } finally {

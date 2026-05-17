@@ -22,12 +22,3 @@ export function GCoinIcon({ size = 24, className = '' }: GCoinProps) {
   );
 }
 
-/** Inline "X Z Coins" badge — amber gradient pill */
-export function GCoinBadge({ amount }: { amount: number }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ffb300] to-[#ffd54f] text-[#1a1a1a] font-black px-3 py-1 rounded-full text-sm shadow-sm">
-      <GCoinIcon size={22} />
-      {amount} Z Coins
-    </span>
-  );
-}

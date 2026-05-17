@@ -8,7 +8,7 @@ import {
   XCircle, Award, CheckCircle2, Package, Plus, Trash2, UploadCloud,
   Tag, Image, Calendar, MapPin, Users, ChevronRight, X, Phone, Mail,
   Megaphone, ToggleLeft, ToggleRight, ShoppingBag, Truck, Clock, CheckCheck,
-  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake, BarChart3, ClipboardList
+  ChevronDown, ChevronUp, ExternalLink, Gift, Star, Pencil, Check, Handshake, BarChart3, ClipboardList, Settings
 } from 'lucide-react';
 import { ZLeaf } from '../components/ZLeaf';
 
@@ -175,7 +175,7 @@ function OrderCard({
 }
 
 
-type Tab = 'submissions' | 'products' | 'banners' | 'events' | 'orders' | 'vouchers' | 'partner_merch' | 'partners';
+type Tab = 'submissions' | 'products' | 'banners' | 'events' | 'orders' | 'vouchers' | 'partner_merch' | 'partners' | 'settings';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -255,6 +255,12 @@ export default function AdminDashboard() {
   const [partnerProductImagePreview, setPartnerProductImagePreview] = useState<string | null>(null);
   const partnerProductFileRef = useRef<HTMLInputElement>(null);
 
+  // ── Site Settings ──
+  const [settingsWaste, setSettingsWaste] = useState('');
+  const [settingsZcoins, setSettingsZcoins] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsMsg, setSettingsMsg] = useState('');
+
   const fetchedTabs = useRef<Set<Tab>>(new Set());
 
   // Mount: guard + load default tab only
@@ -279,6 +285,7 @@ export default function AdminDashboard() {
       case 'vouchers': fetchVouchers(); fetchPartners(); break;
       case 'partner_merch': fetchPartnerProducts(); fetchEvents(); break;
       case 'partners': fetchPartners(); fetchPartnerAnalytics(); break;
+      case 'settings': fetchSettings(); break;
     }
   }, [activeTab, profileRole]);
 
@@ -614,6 +621,30 @@ export default function AdminDashboard() {
     fetchPartnerProducts();
   };
 
+  // ─── Site Settings ───
+  const fetchSettings = async () => {
+    const { data } = await supabase.from('site_settings').select('key, value').in('key', ['stat_waste', 'stat_zcoins']);
+    if (!data) return;
+    const map: Record<string, string> = {};
+    data.forEach((r: any) => { map[r.key] = r.value; });
+    setSettingsWaste(map['stat_waste'] || '4.5T');
+    setSettingsZcoins(map['stat_zcoins'] || '8,000+');
+  };
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    setSettingsMsg('');
+    try {
+      const upserts = [
+        { key: 'stat_waste', value: settingsWaste },
+        { key: 'stat_zcoins', value: settingsZcoins },
+      ];
+      for (const row of upserts) {
+        await supabase.from('site_settings').upsert(row, { onConflict: 'key' });
+      }
+      setSettingsMsg('✓ Stats saved successfully!');
+    } catch (e: any) { setSettingsMsg('Error: ' + e.message); } finally { setSavingSettings(false); }
+  };
+
   if (!profileRole || submissionsLoading) {
     return <div className="flex justify-center items-center py-32"><div className="w-10 h-10 border-4 border-[#2e7d32] border-t-transparent rounded-full animate-spin"></div></div>;
   }
@@ -628,6 +659,7 @@ export default function AdminDashboard() {
     { id: 'vouchers', label: 'Vouchers', icon: <Tag className="w-4 h-4" /> },
     { id: 'partner_merch', label: 'Partner Merch', icon: <Gift className="w-4 h-4" /> },
     { id: 'partners', label: 'Partners', icon: <Handshake className="w-4 h-4" />, badge: partners.length || undefined },
+    { id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
   ];
 
   const ImageUploadBox = ({ preview, onFile, inputRef, label }: { preview: string | null; onFile: (f: File) => void; inputRef: React.RefObject<HTMLInputElement | null>; label?: string }) => (
@@ -1360,6 +1392,58 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══ SETTINGS TAB ═══ */}
+      {activeTab === 'settings' && (
+        <div className="glass-panel p-8 max-w-xl">
+          <h2 className="text-2xl font-bold text-[#1a3d1f] mb-2 flex items-center gap-2">
+            <Settings className="text-[#2e7d32] w-6 h-6" /> Site Stats Settings
+          </h2>
+          <p className="text-[#5f7a60] text-sm mb-8">
+            Edit the stats shown on the Home and About pages. Member count is live (from registered users).
+            Waste Collected and Z Coins Awarded are manually controlled here.
+          </p>
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Waste Collected (display value)</label>
+              <input
+                type="text"
+                value={settingsWaste}
+                onChange={e => setSettingsWaste(e.target.value)}
+                placeholder="e.g. 4.5T"
+                className="input-glass"
+              />
+              <p className="text-xs text-[#5f7a60] mt-1">Shown in hero stats bar and About page. Example: 4.5T, 10T, 2.3 tonnes</p>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#2d4a30] mb-1.5">Z Coins Awarded (display value)</label>
+              <input
+                type="text"
+                value={settingsZcoins}
+                onChange={e => setSettingsZcoins(e.target.value)}
+                placeholder="e.g. 8,000+"
+                className="input-glass"
+              />
+              <p className="text-xs text-[#5f7a60] mt-1">Shown in hero stats bar and About page. Example: 8,000+, 12,500+</p>
+            </div>
+            {settingsMsg && (
+              <div className={`px-4 py-3 rounded-xl text-sm font-medium ${settingsMsg.startsWith('✓') ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+                {settingsMsg}
+              </div>
+            )}
+            <button
+              onClick={saveSettings}
+              disabled={savingSettings}
+              className="btn-primary flex items-center gap-2 !py-2.5 !px-6 disabled:opacity-50"
+            >
+              {savingSettings
+                ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</>
+                : <><Check className="w-4 h-4" />Save Stats</>
+              }
+            </button>
           </div>
         </div>
       )}

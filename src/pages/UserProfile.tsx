@@ -221,9 +221,9 @@ export default function UserProfile() {
           </div>
 
           {/* Z Coins */}
-          <div className="stat-box-dark px-5 py-3 flex items-center gap-3 flex-shrink-0">
+          <div className="stat-box-dark px-5 py-3 flex flex-col items-center justify-center gap-1 flex-shrink-0">
             <GCoinIcon size={42} />
-            <p className="stat-num text-3xl">{totalPoints}</p>
+            <p className="stat-num text-3xl text-center">{totalPoints}</p>
           </div>
         </div>
       </div>

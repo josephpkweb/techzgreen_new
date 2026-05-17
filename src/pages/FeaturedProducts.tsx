@@ -5,7 +5,7 @@ import zCeil18 from '../assets/z ceiling/18.webp';
 import zCeil19 from '../assets/z ceiling/19.jpg';
 import zCeil22 from '../assets/z ceiling/22.jpeg';
 import zPanel1 from '../assets/Z panel/1.png';
-import zPanel2 from '../assets/Z panel/2.png';
+import zPanel2 from '../assets/Z panel/2.jpeg';
 import zPanel4 from '../assets/Z panel/4.png';
 import zPanel5 from '../assets/Z panel/5.jpeg';
 import zPanel6 from '../assets/Z panel/6.jpeg';
@@ -25,7 +25,7 @@ import zPole5 from '../assets/Z pole/recycled-lumber-250x250.jpg.jpeg';
 import zPole6 from '../assets/Z pole/Substructure3_1823ec89-d183-48ef-ad8c-4439e822278e.jpg.jpeg';
 import zPallet1 from '../assets/z pallet/1.jpeg';
 import zPallet2 from '../assets/z pallet/2.jpeg';
-import zPallet3 from '../assets/z pallet/3.png';
+import zPallet3 from '../assets/z pallet/3.jpeg';
 import productsBanner from '../assets/products.png';
 import zMomento1 from '../assets/Z momento/images (12).jpeg';
 import zMomento2 from '../assets/Z momento/images (13).jpeg';
@@ -46,19 +46,19 @@ interface Product {
 
 const PRODUCTS: Product[] = [
   {
-    id: 'z-panel-roofing',
-    name: 'Z Panel Roofing',
-    tagline: 'High-performance recycled roofing panels',
+    id: 'z-panel',
+    name: 'Z Panel',
+    tagline: 'Sustainable, high-strength recycled panels',
     tag: 'Industrial Grade',
     cardImage: zPanel1,
     images: [zPanel1, zPanel2, zPanel4, zPanel5, zPanel6, zPanel7, zPanel8],
-    description: 'TechzGreen\'s Z Panel Roofing is engineered from 100% recycled Multi-Layer Plastic (MLP) for exceptional strength and durability. Designed for tough industrial and commercial applications, these panels withstand extreme weather conditions while delivering unmatched longevity. A direct, eco-friendly replacement for conventional roofing materials.',
+    description: 'Z Panels are sustainable, high-strength panels made using multi-layer and industrial recycled plastics. With zero wood content, these boards offer unmatched resistance to water, acids, termites, and weathering—making them ideal for long-term indoor and outdoor use. No trees are cut. No toxins released. Just a strong, eco-conscious product built to perform.',
     features: [
-      'Exceptional load-bearing capacity',
-      'Weatherproof & UV resistant',
-      'Made from 100% recycled MLP plastic',
-      'Waterproof, pest-proof & fungus-resistant',
-      'Low maintenance — lasts decades',
+      'Green & Sustainable: 100% recycled plastic. Zero wood.',
+      'Acid-Resistant: Handles even concentrated industrial acids.',
+      'Water & Termite-Proof: No swelling, no decay, no pest attacks.',
+      'Heavy Duty Strength: High load-bearing capacity.',
+      'Technical Specs: 3mm - 30mm thickness, 8ft x 4ft size.',
     ],
   },
   {
@@ -82,71 +82,52 @@ const PRODUCTS: Product[] = [
   {
     id: 'z-roofing',
     name: 'Z Roofing',
-    tagline: 'Durable recycled roofing sheets for any structure',
+    tagline: 'Advanced roofing panels for thermal insulation',
     tag: 'Weatherproof',
     cardImage: zRoof1,
     images: [zRoof1, zRoof2, zRoof3, zRoof4, zRoof5, zRoof6],
-    description: 'Z Roofing sheets deliver long-lasting weather protection for residential, agricultural, and industrial structures. Made from 100% recycled plastic, they resist corrosion, UV degradation, and extreme heat — outperforming conventional metal and fibre sheets while keeping interiors cooler.',
+    description: 'Z Roofing Sheets are advanced roofing panels made from recycled polymers, engineered to reduce heat buildup and dampen noise. Their unique material composition offers superior thermal insulation and acoustic comfort, making them ideal for factories, homes, and agricultural sheds. With long life, zero rust, and no water absorption, Z Roofing is the roofing solution for sustainable, high-performance structures.',
     features: [
-      'UV-stable & corrosion-free',
-      'Lightweight — easy to install',
-      'Heat-reflective surface keeps interiors cool',
-      '100% recycled plastic construction',
-      'Long service life with zero rust',
+      'Effective Heat Reduction: Reduces indoor temperatures by 3-4°C.',
+      'Exceptional Acid Resistance: Fully resistant to corrosive elements.',
+      'Unmatched Strength: High-grade durable polymer sheets.',
+      'Zero Rusting or Cracking: Weather-induced degradation resistant.',
+      'Eco-Friendly: Produced entirely from recycled plastics.',
     ],
   },
   {
     id: 'z-pole',
     name: 'Z Pole',
-    tagline: 'Recycled plastic poles for fencing & support',
+    tagline: 'Revolutionary structural components from upcycled plastic',
     tag: 'Structural',
     cardImage: zPole1,
     images: [zPole1, zPole2, zPole3, zPole4, zPole5, zPole6],
-    description: 'Z Poles are heavy-duty recycled plastic posts engineered for fencing, signage, marine docks, and outdoor support structures. Unlike timber, they never rot or splinter; unlike steel, they never rust. A truly maintenance-free alternative for outdoor installations.',
+    description: 'The Z Pole is a revolutionary structural component crafted entirely from upcycled industrial single-use plastic waste. Designed for superior strength, exceptional durability, and ultimate sustainability, the Z Pole is the modern alternative to traditional materials. Ideal for door/window frames, furniture support, and general construction.',
     features: [
-      'Rot-proof, rust-proof & termite-free',
-      'No painting or sealing required',
-      'Available in multiple lengths & diameters',
-      'Ideal for fencing, signage & marine use',
-      '100% recycled plastic — never warps',
+      'Material: 100% Upcycled Plastic Waste.',
+      'Strength & Durability: Extremely strong and high density.',
+      'Workability: Excellent screw holding capacity, easy to cut & drill.',
+      'High Durability: Impervious to rot, moisture, and pests.',
+      'Standard Sizes: Custom sizes in 6 ft to 8 ft lengths.',
     ],
   },
   {
     id: 'z-pallet',
     name: 'Z Pallet',
-    tagline: 'Heavy-duty logistics pallets from recycled plastic',
+    tagline: 'High-performance logistics pallets',
     tag: 'Industrial',
     cardImage: zPallet1,
     images: [zPallet1, zPallet2, zPallet3],
-    description: 'Z Pallets are robust, hygienic, and reusable logistics pallets manufactured from recycled plastic. Built to handle warehouse, food, pharma, and export operations, they replace traditional wooden pallets with a moisture-proof, pest-free, and fully recyclable alternative.',
+    description: 'TechzGreen Eco Product\'s high-performance Z pallets are designed for exceptional strength, durability and load-bearing capacity, making them ideal for the toughest industrial applications. We manufacture heavy-duty pallets that withstand extreme conditions, ensuring unmatched reliability and longevity in material handling.',
     features: [
-      'High load capacity for industrial use',
-      'Moisture-proof & easy to sanitize',
-      'Pest-free — no fumigation required',
-      'Reusable & 100% recyclable',
-      'Suitable for export & food-grade logistics',
+      'High load-bearing capacity with superior strength.',
+      'Higher compressive strength than steel, wooden and plastic pallets.',
+      'Smooth surface prevents damage—no splinters or rough edges.',
+      'Resistant to acids, chemicals and alkalis.',
+      '0% water absorption—fully waterproof for wet conditions.',
     ],
   },
-  {
-    id: 'z-board',
-    name: 'Z Board',
-    tagline: 'Versatile recycled boards for flooring & partitions',
-    tag: 'Multi-Use',
-    cardImage: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&q=80&w=600',
-    images: [
-      'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=900',
-      'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&q=80&w=900',
-    ],
-    description: 'Z Boards are high-density flat panels manufactured from recycled plastic, suitable for flooring, ceiling boards, wall partitions, TV units, and custom interior applications. High-density construction ensures structural integrity while remaining lightweight enough for easy installation.',
-    features: [
-      'High-density, lightweight construction',
-      'Suitable for flooring, ceiling & partitions',
-      'Termite-proof & moisture-resistant',
-      'Customisable sizes & thickness',
-      '100% recycled plastic — zero virgin material',
-    ],
-  },
+
   {
     id: 'z-momento',
     name: 'Z Momento',
@@ -230,7 +211,7 @@ export default function FeaturedProducts() {
         <div className="max-w-7xl mx-auto text-center">
           <span className="section-label inline-flex mb-4"><Package className="w-3.5 h-3.5" />Our Products</span>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1a3d1f] mt-4">Signature Eco-Products</h1>
-          <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Seven flagship products. One mission — turn plastic waste into lasting value.</p>
+          <p className="text-[#5f7a60] mt-3 max-w-xl mx-auto">Six flagship products. One mission — turn plastic waste into lasting value.</p>
         </div>
       </section>
 

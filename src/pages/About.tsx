@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ZLeaf } from '../components/ZLeaf';
@@ -6,16 +7,43 @@ import josephImg from '../assets/joseph.png';
 import akhilImg from '../assets/Akhil James K.png';
 import jitheshImg from '../assets/Jithesh Francis.png';
 import aboutHero from '../assets/01.jpg.jpeg';
+import { supabase } from '../lib/supabase';
+
+// TechzGreen founding year — years experience auto-increments each year
+const FOUNDING_YEAR = 2019;
+function getYearsExp() {
+  const now = new Date();
+  // If we've passed the founding month/day, count current year fully
+  return now.getFullYear() - FOUNDING_YEAR;
+}
 
 export default function About() {
+  const yearsExp = getYearsExp();
+  const [memberCount, setMemberCount] = useState<number>(1200);
+  const [wasteCollected, setWasteCollected] = useState('4.5T');
+  const [zcoinsAwarded, setZcoinsAwarded] = useState('8,000+');
+
+  useEffect(() => {
+    supabase.from('profiles').select('id', { count: 'exact', head: true })
+      .then(({ count }) => { if (count !== null) setMemberCount(count); });
+    supabase.from('site_settings').select('key, value')
+      .in('key', ['stat_waste', 'stat_zcoins'])
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach((r: any) => { map[r.key] = r.value; });
+        if (map['stat_waste']) setWasteCollected(map['stat_waste']);
+        if (map['stat_zcoins']) setZcoinsAwarded(map['stat_zcoins']);
+      });
+  }, []);
   return (
     <div className="fade-in pb-20">
       <Helmet>
-        <title>About TechzGreen – 32+ Years Pioneering Plastic Recycling</title>
-        <meta name="description" content="TechzGreen transforms MLP plastic waste into durable products. Learn about our mission, vision, Z Pallet, Z Board products, and community of 1,200+ eco-warriors." />
+        <title>{`About TechzGreen– ${yearsExp}+ Years Pioneering Plastic Recycling`}</title>
+        <meta name="description" content="TechzGreen transforms MLP plastic waste into durable products. Learn about our mission, vision, Z Pallet, Z Board products, and community of eco-warriors." />
         <link rel="canonical" href="https://techzgreen.in/about" />
-        <meta property="og:title" content="About TechzGreen – 32+ Years Pioneering Plastic Recycling" />
-        <meta property="og:description" content="TechzGreen transforms MLP plastic waste into durable products. Learn about our mission, vision, and community of 1,200+ eco-warriors." />
+        <meta property="og:title" content={`About TechzGreen – ${yearsExp}+ Years Pioneering Plastic Recycling`} />
+        <meta property="og:description" content="TechzGreen transforms MLP plastic waste into durable products. Learn about our mission, vision, and our eco-warrior community." />
         <meta property="og:url" content="https://techzgreen.in/about" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://techzgreen.in/favicon.png" />
@@ -56,12 +84,12 @@ export default function About() {
               />
               {/* Stat badge — top left (inside on mobile) */}
               <div className="absolute left-3 sm:-left-4 top-4 sm:top-16 glass-panel px-3 sm:px-4 py-2 sm:py-3 z-10 shadow-lg">
-                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>32+</p>
+                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>{yearsExp}+</p>
                 <p className="text-[10px] sm:text-xs text-[#5f7a60] font-semibold mt-0.5">Years Experience</p>
               </div>
               {/* Stat badge — bottom right (inside on mobile) */}
               <div className="absolute right-3 sm:-right-4 bottom-4 sm:bottom-16 glass-panel px-3 sm:px-4 py-2 sm:py-3 z-10 shadow-lg">
-                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>1200+</p>
+                <p className="font-black text-xl sm:text-2xl text-[#2e7d32]" style={{ fontFamily: 'Outfit, sans-serif' }}>{memberCount.toLocaleString()}+</p>
                 <p className="text-[10px] sm:text-xs text-[#5f7a60] font-semibold mt-0.5">Community Members</p>
               </div>
             </div>
@@ -286,10 +314,10 @@ export default function About() {
                 <h2 className="text-xl sm:text-4xl font-black text-white">Celebrating an Eco-Revolution</h2>
               </div>
               <p className="text-[rgba(200,230,201,0.9)] max-w-2xl mx-auto leading-relaxed text-lg">
-                Over 1,200 community members, 4.5 tonnes of plastic diverted from landfills, and 8,000+ green points rewarded. This is only the beginning.
+                Over {memberCount.toLocaleString()} community members, {wasteCollected} of plastic diverted from landfills, and {zcoinsAwarded} green points rewarded. This is only the beginning.
               </p>
               <div className="flex flex-wrap justify-center gap-6 pt-2">
-                {[['1,200+', 'Members'], ['4.5T', 'Waste Collected'], ['8,000+', 'Points Awarded']].map(([val, label]) => (
+                {[[`${memberCount.toLocaleString()}+`, 'Members'], [wasteCollected, 'Waste Collected'], [zcoinsAwarded, 'Points Awarded']].map(([val, label]) => (
                   <div key={label} className="stat-box-dark px-6 py-4 min-w-[120px]">
                     <p className="stat-num">{val}</p>
                     <p className="stat-label">{label}</p>

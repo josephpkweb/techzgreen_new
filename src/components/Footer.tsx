@@ -44,6 +44,7 @@ const LINKS = [
   { label: 'Earn Points',       to: '/rewards' },
   { label: 'Profile',           to: '/profile' },
   { label: 'Partner Portal',    to: '/partner/login' },
+  { label: 'Privacy Policy',    to: '/privacy-policy' },
 ];
 
 export default function Footer() {

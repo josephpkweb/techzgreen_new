@@ -9,11 +9,30 @@ import BannerCarousel from '../components/BannerCarousel';
 export default function Landing() {
   const [products, setProducts] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
+  const [siteStats, setSiteStats] = useState({ members: 0, waste: '4.5T', zcoins: '8,000+' });
 
   useEffect(() => {
     supabase.from('products').select('*').limit(4).then(({ data }) => { if (data) setProducts(data); });
     supabase.from('events').select('*').eq('is_active', true).order('event_date', { ascending: true }).limit(4)
       .then(({ data }) => { if (data) setEvents(data); });
+    // Fetch live member count
+    supabase.from('profiles').select('id', { count: 'exact', head: true })
+      .then(({ count }) => {
+        if (count !== null) setSiteStats(s => ({ ...s, members: count }));
+      });
+    // Fetch editable stats from site_settings
+    supabase.from('site_settings').select('key, value')
+      .in('key', ['stat_waste', 'stat_zcoins'])
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach((r: any) => { map[r.key] = r.value; });
+        setSiteStats(s => ({
+          ...s,
+          waste: map['stat_waste'] || s.waste,
+          zcoins: map['stat_zcoins'] || s.zcoins,
+        }));
+      });
   }, []);
 
   const howItWorksSteps = [
@@ -29,9 +48,9 @@ export default function Landing() {
   ];
 
   const stats = [
-    { val: '1,200+', label: 'Members', icon: '🌿' },
-    { val: '4.5T', label: 'Waste Collected', icon: '♻️' },
-    { val: '8,000+', label: 'Z Coins Awarded', icon: '🪙' },
+    { val: siteStats.members > 0 ? `${siteStats.members.toLocaleString()}+` : '1,200+', label: 'Members', icon: '🌿' },
+    { val: siteStats.waste, label: 'Waste Collected', icon: '♻️' },
+    { val: siteStats.zcoins, label: 'Z Coins Awarded', icon: '🪙' },
   ];
 
   return (
@@ -71,8 +90,8 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-r from-[rgba(27,94,32,0.9)] via-[rgba(27,94,32,0.65)] to-[rgba(27,94,32,0.15)]" />
             <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-10 lg:px-16">
               <div className="max-w-lg">
-                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
-                  <ZLeaf className="w-3 h-3" color="green" /> Eco Rewards Platform
+                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] sm:text-sm font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
+                  <ZLeaf className="w-3 h-3" color="green" /> TechzGreen<sup className="text-[8px] sm:text-[10px] align-super">®</sup>&nbsp;Eco Rewards Platform
                 </span>
                 <h1 className="text-white font-black leading-tight mb-2 sm:mb-3" style={{ fontSize: 'clamp(1.4rem, 5.5vw, 3.2rem)', fontFamily: 'Outfit,sans-serif' }}>
                   Turn Waste Into<br />
