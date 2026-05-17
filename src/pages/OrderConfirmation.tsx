@@ -46,7 +46,7 @@ export default function OrderConfirmation() {
     if (!order || !user) return;
     setRetrying(true);
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '');
       // Re-fetch line items to send to backend for trusted-amount validation
       const { data: lineItems } = await supabase
         .from('order_items').select('product_id, partner_product_id, quantity').eq('order_id', order.id);

@@ -181,7 +181,7 @@ export default function Checkout() {
       const res = await loadRazorpayScript();
       if (!res) { alert('Razorpay SDK failed to load. Are you online?'); setLoading(false); return; }
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '');
       const orderResponse = await fetch(`${backendUrl}/api/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
