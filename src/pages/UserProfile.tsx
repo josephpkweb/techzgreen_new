@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import {
   User, MapPin, Plus, Trash2, CheckCircle2,
   XCircle, Clock, Award, Gift, TrendingUp, TrendingDown,
-  Camera, ShoppingBag, Calendar, ChevronRight, Pencil, X, Check
+  Camera, ShoppingBag, Calendar, ChevronRight, Pencil, X, Check, Package
 } from 'lucide-react';
 import { GCoinIcon } from '../components/GCoin';
 
@@ -224,6 +224,23 @@ export default function UserProfile() {
         </div>
       </div>
 
+      {/* ── My Orders CTA ── */}
+      <Link
+        to="/orders"
+        className="flex items-center justify-between glass-panel p-4 mb-5 hover:shadow-md transition-shadow group cursor-pointer"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[rgba(46,125,50,0.1)] flex items-center justify-center border border-[rgba(46,125,50,0.15)]">
+            <Package className="w-5 h-5 text-[#2e7d32]" />
+          </div>
+          <div>
+            <p className="font-bold text-[#1a3d1f] text-sm">My Orders</p>
+            <p className="text-xs text-[#5f7a60]">View & track your orders</p>
+          </div>
+        </div>
+        <ChevronRight className="w-4 h-4 text-[#2e7d32] group-hover:translate-x-1 transition-transform" />
+      </Link>
+
       {/* ── Stats Row ── */}
       <div className="flex flex-wrap gap-3 mb-8 justify-center sm:justify-start">
         <StatPill icon={<GCoinIcon size={28} />} label="Z Coins" value={totalPoints} accent />
@@ -391,6 +408,7 @@ export default function UserProfile() {
                 { to: '/rewards', label: 'Earn Z Coins', icon: <Camera className="w-4 h-4" /> },
                 { to: '/shop', label: 'Shop', icon: <ShoppingBag className="w-4 h-4" /> },
                 { to: '/events', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
+                { to: '/orders', label: 'My Orders', icon: <Package className="w-4 h-4" /> },
               ].map(({ to, label, icon }) => (
                 <Link key={to} to={to} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[rgba(46,125,50,0.05)] hover:bg-[rgba(46,125,50,0.1)] border border-[rgba(46,125,50,0.1)] text-sm font-bold text-[#2d4a30] transition-colors">
                   <span className="text-[#2e7d32]">{icon}</span>{label}

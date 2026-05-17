@@ -261,7 +261,8 @@ export default function Checkout() {
         await completeOrder(order.id, 'failed', snapshotItems, 0);
       });
       paymentObject.open();
-      setLoading(false);
+      // Do NOT setLoading(false) here — keep spinner until navigate fires in completeOrder
+
 
     } catch (error) {
       console.error('Payment flow failed:', error);
@@ -271,6 +272,26 @@ export default function Checkout() {
   };
 
   const inputClass = 'input-glass';
+
+  // ── Full-screen processing overlay ──
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#eef5e9] gap-6 px-4">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-full border-4 border-[rgba(46,125,50,0.15)] border-t-[#2e7d32] animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-[rgba(46,125,50,0.1)] flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-[#2e7d32]" />
+            </div>
+          </div>
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-black text-[#1a3d1f]" style={{ fontFamily: 'Outfit,sans-serif' }}>Processing Payment…</p>
+          <p className="text-sm text-[#5f7a60] mt-1">Please wait. Do not close this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 fade-in">

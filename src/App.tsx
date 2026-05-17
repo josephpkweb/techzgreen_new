@@ -21,6 +21,7 @@ const FeaturedProducts = lazy(() => import('./pages/FeaturedProducts'));
 const PartnerLogin     = lazy(() => import('./pages/PartnerLogin'));
 const PartnerDashboard = lazy(() => import('./pages/PartnerDashboard'));
 const PrivacyPolicy    = lazy(() => import('./pages/PrivacyPolicy'));
+const MyOrders         = lazy(() => import('./pages/MyOrders'));
 
 // Footer only on public content pages — not auth/checkout/dashboard flows
 const FOOTER_ROUTES = ['/', '/about', '/shop', '/featured-products', '/events', '/rewards', '/privacy-policy'];
@@ -67,6 +68,7 @@ function AppInner() {
             <Route path="/privacy-policy"        element={<PrivacyPolicy />} />
             <Route path="/partner/login"         element={<PartnerLogin />} />
             <Route path="/partner/dashboard"     element={<PartnerDashboard />} />
+            <Route path="/orders"                element={<MyOrders />} />
             <Route path="*"                      element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
