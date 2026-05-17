@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { CheckCircle2, ChevronRight, Package, Home, Receipt, MapPin, Star, CreditCard, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Package, Home, Receipt, MapPin, Star, CreditCard, AlertTriangle, Clock, RefreshCw, ShoppingBag } from 'lucide-react';
 
 export default function OrderConfirmation() {
   const { id } = useParams();
@@ -132,11 +132,16 @@ export default function OrderConfirmation() {
   const isFailed = order.status === 'failed' || status === 'failed';
   const isPending = !isPaid && !isFailed;
 
+  const [showAnim, setShowAnim] = useState(false);
+  useEffect(() => {
+    if (isPaid) setTimeout(() => setShowAnim(true), 100);
+  }, [isPaid]);
+
   const headerStyle = isPaid
-    ? { bg: 'from-[#1a3d1f] to-[#2e7d32]', icon: <CheckCircle2 className="w-12 h-12 text-[#ffb300]" />, title: 'Order Confirmed!', sub: 'Thank you for shopping sustainably with TechzGreen.' }
+    ? { bg: 'from-[#1a3d1f] to-[#2e7d32]', title: 'Order Confirmed!', sub: 'Thank you for shopping sustainably with TechzGreen.' }
     : isFailed
-      ? { bg: 'from-red-700 to-red-500', icon: <AlertTriangle className="w-12 h-12 text-white" />, title: 'Payment Failed', sub: 'Your payment did not go through. You can retry below.' }
-      : { bg: 'from-amber-600 to-amber-400', icon: <Clock className="w-12 h-12 text-white" />, title: 'Payment Pending', sub: 'Waiting for confirmation. Retry if you closed the payment window.' };
+      ? { bg: 'from-red-700 to-red-500', title: 'Payment Failed', sub: 'Your payment did not go through. You can retry below.' }
+      : { bg: 'from-amber-600 to-amber-400', title: 'Payment Pending', sub: 'Waiting for confirmation. Retry if you closed the payment window.' };
 
   return (
     <div className="min-h-screen flex items-center justify-center py-10 px-4 fade-in relative overflow-hidden">
@@ -146,11 +151,26 @@ export default function OrderConfirmation() {
 
       <div className="bg-white max-w-2xl w-full rounded-[2rem] shadow-2xl overflow-hidden relative z-10">
         <div className={`bg-gradient-to-r ${headerStyle.bg} p-10 text-center text-white relative`}>
-          <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/20">
-            {headerStyle.icon}
+          {/* Animated icon */}
+          <div className="relative mx-auto mb-6 w-28 h-28 flex items-center justify-center">
+            {isPaid && (
+              <>
+                <span className={`absolute inset-0 rounded-full bg-white/20 transition-all duration-700 ${showAnim ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{animationName: 'ping', animationDuration: '1.5s', animationIterationCount: 'infinite'}} />
+                <span className={`absolute inset-2 rounded-full bg-white/15 transition-all duration-1000 delay-100 ${showAnim ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+              </>
+            )}
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 transition-all duration-500 ${
+              isPaid ? 'bg-white/20' : 'bg-white/10'
+            } ${showAnim ? 'scale-100 opacity-100' : isPaid ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}>
+              {isPaid
+                ? <CheckCircle2 className={`w-14 h-14 text-[#ffb300] transition-all duration-700 delay-200 ${showAnim ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+                : isFailed
+                  ? <AlertTriangle className="w-12 h-12 text-white" />
+                  : <Clock className="w-12 h-12 text-white animate-pulse" />}
+            </div>
           </div>
-          <h1 className="text-4xl font-black mb-3">{headerStyle.title}</h1>
-          <p className="text-white/90 text-lg">{headerStyle.sub}</p>
+          <h1 className={`text-4xl font-black mb-3 transition-all duration-500 delay-300 ${showAnim || !isPaid ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>{headerStyle.title}</h1>
+          <p className={`text-white/90 text-lg transition-all duration-500 delay-500 ${showAnim || !isPaid ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>{headerStyle.sub}</p>
         </div>
 
         <div className="p-8 md:p-10">
@@ -169,7 +189,32 @@ export default function OrderConfirmation() {
             </div>
           )}
 
-          {/* Order Header Summary */}
+          {/* Items Ordered */}
+          {order.order_items?.length > 0 && (
+            <div className="mb-8">
+              <h3 className="font-bold text-[#1a3d1f] flex items-center gap-2 mb-4 border-b border-gray-100 pb-2">
+                <ShoppingBag className="w-4 h-4 text-[#2e7d32]" /> Items Ordered
+              </h3>
+              <div className="space-y-2">
+                {order.order_items.map((item: any, i: number) => (
+                  <div key={i} className={`flex items-center justify-between p-3 rounded-xl bg-[rgba(46,125,50,0.04)] border border-[rgba(46,125,50,0.08)] transition-all duration-300`}
+                    style={{transitionDelay: `${i * 80}ms`, opacity: showAnim || !isPaid ? 1 : 0, transform: showAnim || !isPaid ? 'none' : 'translateX(12px)'}}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#2e7d32]/10 flex items-center justify-center">
+                        <Package className="w-4 h-4 text-[#2e7d32]" />
+                      </div>
+                      <span className="text-sm font-semibold text-[#1a3d1f]">{item.products?.name || 'Product'}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-gray-400">×{item.quantity}</span>
+                      <span className="ml-3 text-sm font-bold text-[#2e7d32]">₹{Number(item.price_at_time * item.quantity).toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl p-5">
               <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Order ID</p>
