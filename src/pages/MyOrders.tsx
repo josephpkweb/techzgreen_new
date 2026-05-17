@@ -26,11 +26,11 @@ type Order = {
 
 // Flipkart-style delivery stages
 const DELIVERY_STAGES = [
-  { key: 'placed',      label: 'Order Placed',       icon: <CheckCircle2 className="w-4 h-4" /> },
-  { key: 'confirmed',   label: 'Order Confirmed',     icon: <Star className="w-4 h-4" /> },
-  { key: 'shipped',     label: 'Shipped',             icon: <Package className="w-4 h-4" /> },
-  { key: 'out',         label: 'Out for Delivery',    icon: <Truck className="w-4 h-4" /> },
-  { key: 'delivered',   label: 'Delivered',           icon: <MapPin className="w-4 h-4" /> },
+  { key: 'placed',    label: 'Order Placed',    icon: () => <CheckCircle2 className="w-4 h-4" /> },
+  { key: 'confirmed', label: 'Order Confirmed', icon: () => <Star className="w-4 h-4" /> },
+  { key: 'shipped',   label: 'Shipped',         icon: () => <Package className="w-4 h-4" /> },
+  { key: 'out',       label: 'Out for Delivery',icon: () => <Truck className="w-4 h-4" /> },
+  { key: 'delivered', label: 'Delivered',       icon: () => <MapPin className="w-4 h-4" /> },
 ];
 
 function getStageIndex(deliveryStatus: string | null | undefined, paymentStatus: string): number {
@@ -95,7 +95,7 @@ function TrackingTimeline({ order }: { order: Order }) {
                   ? 'bg-[#2e7d32] border-[#2e7d32] text-white'
                   : 'bg-white border-[rgba(46,125,50,0.2)] text-[rgba(46,125,50,0.3)]'
               } ${active ? 'ring-4 ring-[rgba(46,125,50,0.15)] scale-110' : ''}`}>
-                {stage.icon}
+                {stage.icon()}
               </div>
               <p className={`text-[10px] font-bold text-center leading-tight ${done ? 'text-[#2e7d32]' : 'text-[rgba(46,125,50,0.35)]'}`}>
                 {stage.label}
