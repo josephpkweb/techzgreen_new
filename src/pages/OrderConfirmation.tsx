@@ -12,6 +12,7 @@ export default function OrderConfirmation() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
+  const [showAnim, setShowAnim] = useState(false);
   const pollRef = useRef<number | null>(null);
 
   const fetchOrder = async () => {
@@ -40,6 +41,11 @@ export default function OrderConfirmation() {
       }
     }, 5000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [order?.status]);
+
+  // Trigger success animation once paid
+  useEffect(() => {
+    if (order?.status === 'paid') setTimeout(() => setShowAnim(true), 100);
   }, [order?.status]);
 
   const handleRetry = async () => {
@@ -131,11 +137,6 @@ export default function OrderConfirmation() {
   const isPaid = order.status === 'paid';
   const isFailed = order.status === 'failed' || status === 'failed';
   const isPending = !isPaid && !isFailed;
-
-  const [showAnim, setShowAnim] = useState(false);
-  useEffect(() => {
-    if (isPaid) setTimeout(() => setShowAnim(true), 100);
-  }, [isPaid]);
 
   const headerStyle = isPaid
     ? { bg: 'from-[#1a3d1f] to-[#2e7d32]', title: 'Order Confirmed!', sub: 'Thank you for shopping sustainably with TechzGreen.' }
