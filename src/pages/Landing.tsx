@@ -90,8 +90,9 @@ export default function Landing() {
             <div className="absolute inset-0 bg-gradient-to-r from-[rgba(27,94,32,0.9)] via-[rgba(27,94,32,0.65)] to-[rgba(27,94,32,0.15)]" />
             <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-10 lg:px-16">
               <div className="max-w-lg">
-                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] sm:text-sm font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
-                  <ZLeaf className="w-3 h-3" color="green" /> TechzGreen<sup className="text-[8px] sm:text-[10px] align-super">®</sup>&nbsp;Eco Rewards Platform
+                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[9px] sm:text-sm font-black uppercase tracking-widest px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/30 w-fit mb-2 sm:mb-3">
+                  <ZLeaf className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" color="green" /> 
+                  <span className="whitespace-nowrap leading-none mt-0.5">TechzGreen<sup className="text-[7px] sm:text-[9px] align-top ml-[1px]">®</sup> Eco Rewards Platform</span>
                 </span>
                 <h1 className="text-white font-black leading-tight mb-2 sm:mb-3" style={{ fontSize: 'clamp(1.4rem, 5.5vw, 3.2rem)', fontFamily: 'Outfit,sans-serif' }}>
                   Turn Waste Into<br />
