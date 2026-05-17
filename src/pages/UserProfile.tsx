@@ -344,9 +344,9 @@ export default function UserProfile() {
                 {addresses.map(addr => (
                   <div key={addr.id} className={`flex items-start gap-3 bg-[rgba(46,125,50,0.03)] border border-[rgba(46,125,50,0.1)] rounded-xl p-4 transition-opacity ${deletingId === addr.id ? 'opacity-40 pointer-events-none' : ''}`}>
                     <MapPin className="w-4 h-4 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                    <div className="flex-grow min-w-0 text-sm text-[#2d4a30]">
-                      <p className="font-bold">{addr.fullname}</p>
-                      <p className="text-[#5f7a60] text-xs mt-0.5">{addr.street}, {addr.city}, {addr.state} — {addr.zip_code}</p>
+                    <div className="flex-grow min-w-0 text-sm text-[#2d4a30] overflow-hidden">
+                      <p className="font-bold truncate">{addr.fullname}</p>
+                      <p className="text-[#5f7a60] text-xs mt-0.5 break-words">{addr.street}, {addr.city}, {addr.state} — {addr.zip_code}</p>
                     </div>
                     <button onClick={() => deleteAddress(addr.id)} className="flex-shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer">
                       <Trash2 className="w-3.5 h-3.5" />
@@ -384,14 +384,14 @@ export default function UserProfile() {
                       alt="Waste"
                       className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
                     />
-                    <div className="flex-grow min-w-0">
+                    <div className="flex-grow min-w-0 overflow-hidden">
                       <div className="flex items-center gap-2 flex-wrap">
                         <StatusBadge status={sub.status} />
                         {sub.points_awarded > 0 && (
-                          <span className="inline-flex items-center gap-1 text-xs font-black text-green-700"><GCoinIcon size={18} />+{sub.points_awarded} Z Coins</span>
+                          <span className="inline-flex items-center gap-1 text-xs font-black text-green-700 whitespace-nowrap"><GCoinIcon size={18} />+{sub.points_awarded} Z Coins</span>
                         )}
                       </div>
-                      <p className="text-xs text-[#5f7a60] mt-0.5">{new Date(sub.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</p>
+                      <p className="text-xs text-[#5f7a60] mt-0.5 truncate">{new Date(sub.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</p>
                     </div>
                   </div>
                 ))}
